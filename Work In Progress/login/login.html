@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="sidecon">
+            <img src="cart7.jpg" alt="" height="450px" ; width="400px" ;>
+            <div class="header">
+                <h3>Welcome to Heaton's Mart</h3>
+                <p>Your Neighbourhood Grocers</p>
+            </div>
+        </div>
+
+        <div class="login-form">
+            <h1 class="title">Login</h1>
+            <form method="Post">
+                <div class="input">
+                    <label>Username <span>*</span></label>
+                    <input type="text" name="username" placeholder="Email">
+                </div>
+                <div class="input">
+                    <label>Password<span>*</span></label>
+                    <input type="text" name="username" placeholder="password">
+                </div>
+                <div class="input">
+                    <label>Role<span>*</span></label>
+                    <select class="role" name="Select Role">
+                        <option value="">Select Role</option>
+                        <option value="">Customer</option>
+                        <option value="">Trader</option>
+                        <option value="">Admin</option>
+                    </select>
+                </div>
+                <div class="check">
+
+                    <div class="check-box">
+                        <input type="checkbox" name="confirm">
+                        <label>Remember me</label>
+                    </div>
+
+                    <a href="#">Forget Password</a>
+                </div>
+                <div class="input">
+                    <input type="submit" name="subLogin" value="Login">
+                </div>
+                <div class="link">
+                    <p>
+                        Not a member of Heaton's Mart?
+                        <a href="../register/customerSignup.php">Signup</a>
+                    </p>
+                    <div class="social">
+                        <img src="../img/facebook.png" alt="" height="30px" width="30px">
+                        <img src="../img/twitter.png" alt="" height="30px" width="30px">
+                        <img src="../img/google.png" alt="" height="30px" width="30px">
+                    </div>
+                    
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>

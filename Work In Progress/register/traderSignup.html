@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <link rel="stylesheet" href="signup.css">
+    <style>
+        #customer:hover{
+            background-color: green;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="one">
+            <img src="cart7.jpg" alt="">
+            <div class="onei">
+                <h3>Welcome to Heaton's Mart</h3>
+                <p>Your Neighbourhood Grocers</p>
+            </div>
+        </div>
+        <div class="two">
+            <div class="twoi">
+                <a href="customerSignup.php" id="customer">Customer</a>
+                <a href="traderSignup.php " id="trader">Trader</a>
+            </div>
+
+            <div class="form">
+                <h1>Signup</h1>
+
+                <form mathod="POST" action="">
+                    <div class="form-input">
+                        <label>First Name<span>*</span></label>
+                        <input type="text" name="fname">
+                    </div>
+                    <div class="form-input">
+                        <label>Last Name<span>*</span></label>
+                        <input type="text" name="lname">
+                    </div>
+                    <div class="form-input">
+                        <label>Email<span>*</span></label>
+                        <input type="text" name="uemail">
+                    </div>
+                    <div class="form-input">
+                        <label>Gender<span>*</span></label>
+                        <select name="Select Gender">
+                            <option value="">Select Gender</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                            <option value="O">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-input">
+                        <label>Category<span>*</span></label>
+                        <input type="text" name="category">
+                    </div>
+                    <div class="form-input">
+                        <label>Password<span>*</span></label>
+                        <input type="text" name="password">
+                    </div>
+                    <div class="form-input">
+                        <label>Confirm Password<span>*</span></label>
+                        <input type="text" name="cpassword">
+                    </div>
+                    <div class="check">
+                        <input type="checkbox" name="confirm">
+                        <p>Terms & Conditions</p>
+                    </div>
+                    <div class="login">
+                        <input type="submit" name="subLogin" value="Signup">
+                    </div>
+                    <div>
+                        <P>
+                            Already member of Heaton's Mart?
+                            <a href="../login/login.php">Login</a>
+                        </P>
+                        <div class="social">
+                            <img src="../img/facebook.png" alt="" height="30px" width="30px">
+                            <img src="../img/twitter.png" alt="" height="30px" width="30px">
+                            <img src="../img/google.png" alt="" height="30px" width="30px">
+                        </div>
+                    </div>
+
+
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('trader').style.background="green";
+        document.getElementById('trader').style.color="white";
+        
+        </script>
+
+</body>
+
+</html>

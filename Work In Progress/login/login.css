@@ -1,0 +1,120 @@
+:root{
+    --purple:#c0d0ec;
+    --green:#dfedd6;
+    --blue:#c0e6ec;
+}
+body{
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    font-family: 'Courier ',sans-serif;
+}
+.container{
+    display: flex;
+    justify-content: center;
+    margin-block: 5%;
+    margin-inline: 10%;
+    border-radius: 10px;
+    background-color:var(--purple);
+}
+.sidecon{
+    width: 50%;
+    background-color: black;
+    border-radius: 10px 0px 0px 10px;
+    
+}
+.sidecon img{
+    width: 100%;
+    height: 100%;
+    border-radius: 10px 0px 0px 10px;
+    opacity: 0.5;
+}
+.header{
+    position: relative;
+    top: -350px;
+    color: white;
+    text-align: center;
+    
+}
+.header h3{
+    font-size: 30px;
+    margin-bottom: -3px;
+}
+.header p{
+    font-size: 18px;
+    color: #c0d0ec;
+}
+.login-form{
+    width: 50%;
+    padding-inline: 5%;
+}
+.title{
+    text-align: center;
+    padding-top: 10px;    
+}
+.input{
+    display: flex;
+    flex-direction: column;
+    margin-block: 20px;
+}
+.input label{
+    color:black;
+    font-size: 20px;
+}
+.input input{
+    padding-block: 6px;
+    border: 5px;
+    width: 100%;
+    padding-left: 10px;
+    font-size: 18px;
+    outline: none;
+    border: 1px gray;
+    border-radius: 5px;
+
+}
+.input > select{
+    padding-block: 6px;
+    border: 5px;
+    width: 100%;
+    padding-left: 10px;
+    font-size: 18px;
+    border-radius: 5px;
+
+
+}
+.input span{
+    color: red;
+}
+.check{
+    color: white;
+    display: flex;
+    justify-content: space-between;
+
+}
+a{
+    color: white;
+}
+.social{
+    display: flex;
+    border-radius: 5px;  
+
+}
+.social img{
+    border-radius: 5px;
+    margin-inline: 2%;
+}
+/* Responsive */
+@media screen and (max-width:500px) {
+    .sidecon{
+        display: none;
+    }
+    .login-form{
+        padding-inline: 1%;
+        width: 80%;
+    }
+    .container{    
+        margin-inline: 3%;
+        padding-block-end: 3%;
+    }
+}
