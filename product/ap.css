@@ -1,0 +1,104 @@
+:root{
+    --purple:#c0d0ec;
+    --green:#dfedd6;
+    --blue:#c0e6ec;
+}
+body{
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+    font-family: 'Courier ',sans-serif;
+
+}
+.addproduct{
+    display: flex;
+    margin-block: 7%;
+    margin-inline: 20%;
+    border-radius: 10px;
+    background-color:var(--purple);
+}
+legend{
+    margin-block: 10px;
+    margin-inline: 15px;
+}
+.part1{
+    display: flex;
+    padding-inline: 10px;
+}
+.part2{
+    display: flex;
+    flex-direction: column;
+    margin-block: 15px;
+    margin-inline: 10px;
+}
+.data{
+    display: flex;
+    flex-direction: column;
+}
+.data input{
+    width: 100%;
+    border-radius: 5px;
+    height: 20px;
+}
+.data > select{
+    width: 100%;
+    border-radius: 5px;
+    height: 25px;
+}
+.desc{
+    display: flex;
+    flex-direction: column;
+    margin-block: 10px;
+}
+
+.desc textarea{
+    border-radius: 5px;
+    width: 100%;
+    height: 100px;
+}
+.price{
+    display: flex;
+    width: 100%;
+    margin-block: 10px;
+}
+.price input{
+    border-radius: 5px;
+    height: 20px;
+}
+.btn input{
+    width: 50%;
+    height: 30px;
+    border-radius: 5px;
+}
+@media screen and (max-width:450px){
+    .part1{
+        display: flex;
+        flex-direction:column;
+    }
+    .data{
+        display: flex;
+        flex-direction: column;
+    }
+    .data input{
+        border-radius: 5px;
+        width: 70%;
+        height: 20px;
+    }
+    .data > select{
+        width: 70%;
+        border-radius: 5px;
+        height: 25px;
+    }
+    .desc textarea{
+        border-radius: 5px;
+        width: 70%;
+        height: 80px;
+    
+    }
+    .price{
+        display: flex;
+        flex-direction: column;
+        width: 70%;
+        margin-block: 5px;
+    }
+}
