@@ -1,0 +1,105 @@
+*{
+    padding:0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none;
+    list-style: none;
+}
+/* - - - -Footer section- - - -*/
+.about{
+    display: block;
+}
+.about div{
+    border: 1px #000 solid ;
+    padding: 20px;
+}
+.aboutus{
+    background-image:url("image/berry.jpg");
+    background-position: center;
+    color: white;
+    justify-content: center;
+    background-size:cover;
+    position: relative;
+    width: 100%; 
+    align-items: center; 
+    height: 200px;
+    text-align: center;
+}    
+.footer{
+    display: flex;
+    text-align: center;
+    background: black;
+    color: white;
+}
+.footer div{
+    border: 1px #000 solid ;
+    padding: 20px;
+    align-items: center;
+}
+.box1 a{
+    display: flex;
+    text-decoration: white;
+    color: black;
+}
+.footer .box1{
+    flex: 1;
+    justify-content: space-between;
+    align-items: center;
+}
+.box1 a {
+    list-style: none;
+    padding: 10px;
+    display: block;
+    color: #ddd;
+}
+.box1 a:hover {
+    color: plum;
+    cursor: pointer;
+}
+.footer .box2{
+    flex: 1;
+    display: block;
+}
+.social-icons{
+    align-items: center;
+    color: #ddd;
+    padding-left: 40px;
+}
+.social-icons i{
+    cursor: pointer;
+    font-size: 25px;
+}
+.social-icons i:hover{
+    color: plum;
+}
+@media only screen and (max-width: 768px) {
+    .aboutus{
+      height: auto;
+    }
+    .footer{
+      flex-wrap: wrap;
+    }
+    .footer div{
+      width: 100%;
+      margin-top: 20px;
+    }
+  }
+  
+@media only screen and (max-width: 480px) {
+    .aboutus{
+      height: 350px;
+    }
+    .box1{
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .box1 a{
+      margin-top: 10px;
+    }
+    .social-icons{
+      padding-left: 0;
+      margin-top: 10px;
+    }
+  }

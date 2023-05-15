@@ -1,0 +1,141 @@
+*{
+  padding:0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  text-decoration: none;
+  list-style: none;
+}
+
+:root{
+  --bg-color: white;
+  --text-color: black;
+  --main-color: rgb(97, 145, 67);
+}
+
+body{
+  min-height: 100vh;
+  background: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  overflow-x: hidden;
+}
+.navbar-nav .nav-link {
+  color: black;
+  font-size: 18px;
+  margin-right: 30px;
+}
+.navbar-nav .nav-link:hover{
+  color: var(--main-color);
+}
+.navbar-brand img {
+  height: 80px;
+}
+
+.navbar{
+  background-color: white;
+}
+
+.navbar-nav {
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.nav-link{
+  color: black;
+}
+
+.nav-item {
+  color: black;
+  margin: 0 12px;
+}
+
+.main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.main a {
+  margin-right: 25px;
+  margin-left: 25px;
+  color:var(--text-color);
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all .50s ease;
+}
+
+.main a:hover{
+  color: var(--main-color);
+}
+
+.menu-icon {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .navbar-nav {
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .nav-item {
+    display: block;
+    margin: 10px 0;
+  }
+
+  .main a {
+    display: flex;
+  }
+
+  .menu-icon {
+    display: flex;
+    cursor: pointer;
+  }
+
+  .navbar-toggler {
+    margin-right: 0;
+  }
+
+  .navbar-collapse {
+    display: none;
+    justify-content: center;
+  }
+
+  .navbar-collapse.show {
+    display: flex;
+    align-items: center;
+  }
+
+  .navbar-nav {
+    flex-direction: column;
+  }
+
+  .nav-item {
+    margin: 5px 0;
+  }
+
+  .navbar-nav .nav-item:last-child {
+    margin-bottom: 40px;
+  }
+  
+  .navbar-nav .nav-item {
+    text-align: center;
+  }
+
+  .navbar-nav .nav-link {
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  .navbar-nav .nav-link:hover {
+    color: var(--main-color);
+  }
+  .main a:hover{
+    color: var(--main-color);
+  }  
+}
