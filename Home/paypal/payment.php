@@ -1,75 +1,17 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Paypal Payment</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <main id="cart-main">
-        <div class="site-title text-center">
-            <h1 class="font-title">Shopping Cart</h1>
-        </div>
+<?php
+/* 
+ * PayPal and database configuration 
+ */
 
-        <div class="container">
-            <div class="grid">
-                <div class="col-1">
-                    <div class="flex item justify-content-between">
-                        <div class="flex">
-                            <div class="img text-center">
-                                <img src="/Applications/XAMPP/xamppfiles/htdocs/PayPal1/assets/GG1.jpg" alt="">
-                            </div>
-                            <div class="title">
-                                <h3>tomato</h3>
-                                <span>Grocery</span>
+// PayPal configuration 
+define('PAYPAL_ID', 'sb-zyvay25739447@business.example.com');
+define('PAYPAL_SANDBOX', TRUE); //TRUE or FALSE 
 
-                                <div class="buttons">
-                                    <button type="submit"><i class="fas fa-chevron-up"></i> </button>
-                                    <input type="text" class="font-title" value="1">
-                                    <button type="submit"><i class="fas fa-chevron-down"></i> </button>
-                                </div>
-                                <a href="#">Save for later</a> |
-                                <a href="#">Delete From Cart</a>
-                            </div>
-                        </div>
-                        <div class="price">
-                            <h4 class="text-red">$349</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-2">
-                    <div class="subtotal text-center">
-                        <h3>Price Details</h3>
+define('PAYPAL_RETURN_URL', 'http://localhost/group_project/team_project/Home/paypal/success.php');
+define('PAYPAL_CANCEL_URL', 'http://localhost/group_project/team_project/Home/homepage.php');
+define('PAYPAL_CURRENCY', 'USD');
 
-                        <ul>
-                            <li class="flex justify-content-between">
-                                <label for="price">Products ( 3 items ) : </label>
-                                <span>$99</span>
-                            </li>
-                            <li class="flex justify-content-between">
-                                <label for="price">Delivery Charges : </label>
-                                <span>Free</span>
-                            </li>
-                            <hr>
-                            <li class="flex justify-content-between">
-                                <label for="price">Amout Payble : </label>
-                                <span class="text-red font-title">$99</span>
-                            </li>
-                        </ul>
-                        <div id="paypal-payment-button">
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-
-    <script src="https://www.paypal.com/sdk/js?client-id=ATqJoT8uledW83BN2RvdA4o9tptMnGw4EUVlV1na6YHhKgqXEHcJXE8t0EZLGsDr4mybfMJ5nXxL10vQ&disable-funding=credit,card"></script>
-    <script src="index.js"></script>
-</body>
-</html>
+// Change not required 
+define('PAYPAL_URL', (PAYPAL_SANDBOX == true) ? "https://www.sandbox.paypal.com/cgi-bin/webscr" : "https://www.paypal.com/cgi-bin/webscr");

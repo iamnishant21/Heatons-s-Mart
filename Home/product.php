@@ -1,4 +1,5 @@
 <?php
+  session_start();
   include('../connection.php');
 
   if(isset($_POST['searchname'])){
@@ -25,11 +26,17 @@
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://kit.fontawesome.com/b2d665fac3.js" crossorigin="anonymous"></script>
+
+    <style>
+      .add-to-cart , .add-to-wishlist{
+        cursor: pointer;
+      }
+    </style>
   </head>    
 <body>
 <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container">
-      <a class="navbar-brand" href="homepage.html"><img src="Heaton's Mart.png"></a>
+      <a class="navbar-brand" href="homepage.php"><img src="Heaton's Mart.png"></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
         <span class="icon-bar"></span>
@@ -42,17 +49,30 @@
             <a class="nav-link" href="homepage.php">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../contact_us/contact_us.php">Contact Us</a>
+            <a class="nav-link" href="contact_us.php">Contact Us</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="product.php">Products</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="deals.php">Deals</a>
-          </li>
         </ul>
         <div class="main">
-          <a href="login.php" class="user"><i class="fas fa-user"></i></a>
+          <!-- <a href="login.php" class="user"><i class="fas fa-user"></i></a> -->
+          <li class="nav-item dropdown">
+                <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                  <?php
+                    if(isset($_SESSION['user_ID'])){
+                      echo "<li><a class='dropdown-item' href='../customer/customerprofile.php'>View Profile</a></li>";
+                      echo "<li><a class='dropdown-item' href='../logout.php'>Logout</a></li>";
+                    }
+                    else{
+                      echo "<li><a class='dropdown-item' href='../login.php'>Login</a></li>";
+                    }
+                  ?>
+                </ul>
+              </li>
           <a href="cart.php" ><i class="fas fa-shopping-cart"></i></a>
           <a href="wishlist.php"> <i class="fas fa-heart"></i></a>
         </div>
@@ -144,7 +164,7 @@
     <div class="product-row">
      <?php
       if(isset($_GET['productname'])){
-        $sql = 'SELECT * FROM "PRODUCT" WHERE PRODUCT_NAME = :pname';
+        $sql = "SELECT * FROM PRODUCT WHERE  PRODUCT_NAME LIKE '%' || :pname || '%'";
         $stmt = oci_parse($conn, $sql);
         oci_bind_by_name($stmt,':pname', $_GET['productname']);
       }
@@ -187,14 +207,20 @@
 
       echo"
       <div class='product'>
-           <img src='image/$product_image' onclick='viewproduct($product_id)'>
-           <div class='product-info'>
+      <img src='../trader/uploads/$product_image' onclick='viewproduct($product_id)'>
+      <div class='product-info'>
            <h3>$product_name</h3>
-           <p>Price:$product_price</p>
-           <div class='product-icons'>
-            <a href='cart.php' class='add-to-cart'><i class='fa fa-shopping-cart'></i></a>
-            <a href='wishlist.php' class='add-to-wishlist'><i class='fa fa-heart'></i></a>
-          </div>
+           <p>Price: &pound; $product_price</p>
+           <div class='product-icons'>";
+           if(isset($_SESSION['user_ID'])){
+            echo "<div class='add-to-cart' onclick='addtocart($product_id,1)'><i class='fa fa-shopping-cart'></i></div>";
+            echo "<div class='add-to-wishlist'  onclick='addtowishlist($product_id)' ><i class='fa fa-heart'></i></div>";
+          }
+          else{
+            echo "<div class='add-to-cart'><i class='fa fa-shopping-cart'></i></div>";
+            echo "<div class='add-to-wishlist'><i class='fa fa-heart'></i></div>";
+          }
+          echo "</div>
         </div>
       </div>";
     }
@@ -212,10 +238,9 @@
     </div>
     <div class="footer">
       <div class="box1">
-        <a href="homepage.html">Home</a>
-        <a href="product.html">Product</a>            
-        <a href="deals.html">Deals</a>
-        <a href="contact.html">Contact</a>
+        <a href="homepage.php">Home</a>
+        <a href="product.php">Product</a>            
+        <a href="contact_us.html">Contact</a>
       </div>
       <div class="box2">
         <h3>CONTACT</h3>
@@ -240,6 +265,29 @@
         function viewproduct(p_id) {
             window.location.href = "pdetail.php?p_id=" + p_id;
         }
+
+        function addtocart(id, quantity){
+           var xml = new XMLHttpRequest();
+            xml.onreadystatechange = function () {
+              if (this.readyState == 4 && this.status == 200) {
+                alert(this.responseText);
+              }
+            };
+            xml.open("GET", "addCartWishlist.php?action=addcart&id=" + id + "&quantity=" + quantity, true);
+            xml.send();
+        }
+
+        function addtowishlist(pid){
+          var xml = new XMLHttpRequest();
+            xml.onreadystatechange = function () {
+              if (this.readyState == 4 && this.status == 200) {
+                alert(this.responseText);
+              }
+            };
+            xml.open("GET", "addCartWishlist.php?action=addwishlist&id=" + pid, true);
+            xml.send();
+        }
+
      </script>
 
 </body>

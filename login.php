@@ -97,11 +97,16 @@
         <div class="sidecon">
             <img src="cart7.jpg" alt="">
             <div class="header">
-                <h3>Welcome to Heaton's Mart</h3>
+                <h3 onclick='home()'>Welcome to Heaton's Mart</h3>
                 <p>Your Neighbourhood Grocers</p>
             </div>
         </div>
-
+        <script>
+            function home(){
+                document.location.href = "Home/homepage.php";
+            }
+            
+        </script>
         <div class="login-form">
             <h1 class="title">Login</h1>
             <form method="post" action="">

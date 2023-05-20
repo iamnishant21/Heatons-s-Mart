@@ -1,3 +1,64 @@
+<?php
+	session_start();
+	include('../connection.php');
+
+	echo "\n".$_SESSION['slot_id'] ;
+	echo "\n".$_SESSION['cart_id'] ;
+	echo "\n".$_SESSION['total'] ;
+
+	unset($_SESSION['order_id']);
+
+	$sql_order = 'SELECT * FROM "ORDER" WHERE SLOT_ID = :slot_id AND CART_ID = :cart_id AND TOTAL_AMOUNT = :total_amount';
+	$stmts = oci_parse($conn, $sql_order);
+	oci_bind_by_name($stmts , ":slot_id" , $_SESSION['slot_id']);
+	oci_bind_by_name($stmts, ":cart_id" , $_SESSION['cart_id']);
+	oci_bind_by_name($stmts , ":total_amount" ,$_SESSION['total']);
+	oci_execute($stmts);
+	while($data = oci_fetch_array($stmts)){
+		$order_id = $data['ORDER_ID'];
+		$invoice_no = $data['INVOICE_NO'];
+		$order_date = $data['ORDER_DATE'];
+	}
+	
+	$_SESSION['order_id'] = $order_id;
+
+		$order_sql = "SELECT * FROM CART_PRODUCT WHERE CART_ID = :cart_id";
+		$stmt = oci_parse($conn, $order_sql);
+		oci_bind_by_name($stmt, ":cart_id", $_SESSION['cart_id']);
+		oci_execute($stmt);
+
+        while ($data = oci_fetch_array($stmt, OCI_ASSOC)) {
+          $product_id = $data['PRODUCT_ID'];
+          $quantity = $data['QUANTITY'];
+
+          $sql = "INSERT INTO ORDER_PRODUCT(ORDER_ID,PRODUCT_ID,ORDER_QUANTITY) VALUES (:order_id,:product_id,:quantity)";
+          $stid = oci_parse($conn, $sql);
+          oci_bind_by_name($stid, ":order_id", $order_id);
+          oci_bind_by_name($stid, ":product_id", $product_id);
+          oci_bind_by_name($stid, ":quantity", $quantity);
+          oci_execute($stid);
+		}
+
+	$delcart = "DELETE FROM CART_PRODUCT WHERE CART_ID = :cart_id";
+	$delstmt = oci_parse($conn,$delcart);
+	oci_bind_by_name($delstmt , ":cart_id" , $_SESSION['cart_id']);
+	oci_execute($delstmt);
+
+	$usersql = 'SELECT * FROM "USER" WHERE USER_ID = :user_id';
+	$userstmt = oci_parse($conn,$usersql);
+	oci_bind_by_name($userstmt , ":user_id" , $_SESSION['user_ID']);
+	oci_execute($userstmt);
+	while($data = oci_fetch_array($userstmt)){
+		$firstname = $data['FIRSTNAME'];
+		$lastname = $data['LASTNAME'];
+		$email = $data['EMAIL_ADDRESS'];
+		$phone = $data['PHONE_NUMBER'];
+		$address = $data['ADDRESS'];
+	} 
+
+include('paypal/payment.php');
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,7 +72,7 @@
 		<div class="header">
 			<div class="logo_invoice_wrap">
 				<div class="logo_sec">
-					<img src="/Applications/XAMPP/xamppfiles/htdocs/INVOICE 3333/LOGO2.jpeg" alt="code logo">
+					<!-- <img src="/Applications/XAMPP/xamppfiles/htdocs/INVOICE 3333/Heaton's Mart.png"> -->
 					<div class="title_wrap">
 						<p class="title bold">Heaton's Mart</p>
 						<p class="sub_title">Your Neighbour Grocery</p>
@@ -21,27 +82,25 @@
 					<p class="invoice bold">INVOICE</p>
 					<p class="invoice_no">
 						<span class="bold">Invoice</span>
-						<span>#3488</span>
+						<span>#<?php echo $invoice_no;?></span>
 					</p>
 					<p class="date">
 						<span class="bold">Date</span>
-						<span>28/April/2023</span>
+						<span><?php echo $order_date; ?></span>
 					</p>
 				</div>
 			</div>
 			<div class="bill_total_wrap">
 				<div class="bill_sec">
 					<p>Bill To</p> 
-	          		<p class="bold name">Rohit pandey</p>
+	          		<p class="bold name"><?php echo $firstname . " ".$lastname; ?></p>
 			        <span>
-			           123 walls street, Townhall<br/>
-			           +111 222345667
+					<?php echo $email; ?><br/>
+			           <?php echo $address; ?><br/>
+			           <?php echo $phone; ?>
 			        </span>
 				</div>
-				<div class="total_wrap">
-					<p>Total Due</p>
-	          		<p class="bold price">USD: $1200</p>
-				</div>
+
 			</div>
 		</div>
 		<div class="body">
@@ -56,96 +115,48 @@
 					</div>
 				</div>
 				<div class="table_body">
-					<div class="row">
-						<div class="col col_no">
-							<p>01</p>
+
+				<?php 
+					$price = 0;
+					$count = 0;
+					$prodsql ="SELECT op.*, p.*
+					FROM ORDER_PRODUCT op
+					JOIN PRODUCT p ON op.PRODUCT_ID = p.PRODUCT_ID
+					WHERE op.ORDER_ID = :order_id";
+
+					$stmts = oci_parse($conn,$prodsql);
+
+					oci_bind_by_name($stmts , ":order_id" , $order_id);
+					oci_execute($stmts);
+					
+					while($row = oci_fetch_array($stmts)){
+						$count += 1;
+						$quantity = (int)$row['ORDER_QUANTITY'];
+						$price = $quantity * (int)$row['PRODUCT_PRICE'];
+
+						echo "
+						<div class='row'>
+						<div class='col col_no'>
+							<p>$count</p>
 						</div>
-						<div class="col col_des">
-							<p class="bold">meat</p>
-							<p>Lorem ipsum dolor sit.</p>
+						<div class='col col_des'>
+							<p class='bold'>".$row['PRODUCT_NAME']."</p>
+							<p>".substr($row['PRODUCT_DESCRIPTION'] , 0, 50)."</p>
 						</div>
-						<div class="col col_price">
-							<p>$350</p>
+						<div class='col col_price'>
+							<p>&pound; ".$row['PRODUCT_PRICE']."</p>
 						</div>
-						<div class="col col_qty">
-							<p>2</p>
+						<div class='col col_qty'>
+							<p>".$quantity."</p>
 						</div>
-						<div class="col col_total">
-							<p>$700.00</p>
+						<div class='col col_total'>
+							<p>&pound; ".$price."</p>
 						</div>
-					</div>
-					<div class="row">
-						<div class="col col_no">
-							<p>02</p>
-						</div>
-						<div class="col col_des">
-							<p class="bold">Fish</p>
-							<p>Lorem ipsum dolor sit.</p>
-						</div>
-						<div class="col col_price">
-							<p>$350</p>
-						</div>
-						<div class="col col_qty">
-							<p>2</p>
-						</div>
-						<div class="col col_total">
-							<p>$700.00</p>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col col_no">
-							<p>03</p>
-						</div>
-						<div class="col col_des">
-							<p class="bold">Bakery</p>
-							<p>Lorem ipsum dolor sit.</p>
-						</div>
-						<div class="col col_price">
-							<p>$120</p>
-						</div>
-						<div class="col col_qty">
-							<p>1</p>
-						</div>
-						<div class="col col_total">
-							<p>$700.00</p>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col col_no">
-							<p>04</p>
-						</div>
-						<div class="col col_des">
-							<p class="bold">Cake</p>
-							<p>Lorem ipsum dolor sit.</p>
-						</div>
-						<div class="col col_price">
-							<p>$350</p>
-						</div>
-						<div class="col col_qty">
-							<p>2</p>
-						</div>
-						<div class="col col_total">
-							<p>$700.00</p>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col col_no">
-							<p>05</p>
-						</div>
-						<div class="col col_des">
-							<p class="bold">Vegetable</p>
-							<p>Lorem ipsum dolor sit.</p>
-						</div>
-						<div class="col col_price">
-							<p>$150</p>
-						</div>
-						<div class="col col_qty">
-							<p>1</p>
-						</div>
-						<div class="col col_total">
-							<p>$700.00</p>
-						</div>
-					</div>
+					</div>";
+					}
+					
+				?>
+
 				</div>
 			</div>
 			<div class="paymethod_grandtotal_wrap">
@@ -156,22 +167,49 @@
 				<div class="grandtotal_sec">
 			        <p class="bold">
 			            <span>SUB TOTAL</span>
-			            <span>$7500</span>
+			            <span><?php echo $_SESSION['total'];?></span>
 			        </p>
 			        <p>
-			            <span>Tax Vat 18%</span>
-			            <span>$200</span>
+			            <span>Tax Vat 13%</span>
+			            <span>
+							<?php 
+								$amount = $_SESSION['total'];
+								$tax = 13;
+								$taxamount = $_SESSION['total'] * 0.13;
+								echo $taxamount;
+							?>
+						</span>
 			        </p>
-			        <p>
-			            <span>Discount 10%</span>
-			            <span>-$700</span>
-			        </p>
+			       
 			       	<p class="bold">
 			            <span>Grand Total</span>
-			            <span>$7000.0</span>
+			            <span><?php 
+								unset($_SESSION['finalamount']);
+									$finalamount =$taxamount + $_SESSION['total'];
+									echo $finalamount;
+									$_SESSION['finalamount'] = $finalamount;
+							 ?>
+						</span>
 						
 			        </p>
-					<button onclick="payment()">OK</button>
+					<!-- for paypal -->
+					<form action="<?php echo PAYPAL_URL; ?>" method='post'>
+						<div class="place-btn">
+							
+							<input type="hidden" name="business" value="<?php echo PAYPAL_ID; ?>">
+
+							<input type="hidden" name="amount" value="<?php echo $finalamount; ?>">
+							
+							<input type="hidden" name="currency_code" value="<?php echo PAYPAL_CURRENCY; ?>">
+						<!-- Specify a Buy Now button. -->
+							<input type="hidden" name="cmd" value="_xclick">
+							<!-- Specify URLs -->
+							<input type="hidden" name="return" value="<?php echo PAYPAL_RETURN_URL; ?>">
+							<input type="hidden" name="cancel_return" value="<?php echo PAYPAL_CANCEL_URL; ?>">
+
+							<input type="submit" name="submit" value="Payment By Paypal" />
+						</div>
+					</form>
 				</div>
 			</div>
 		</div>
@@ -184,12 +222,6 @@
 		</div>
 	</div>
 </div>
-
-<script>
-	function payment(){
-		document.location.href = 'paypal/payment.php';
-	}
-</script>
 
 </body>
 </html>

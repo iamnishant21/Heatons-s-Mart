@@ -1,7 +1,10 @@
 <?php
 // Connect to Oracle database
+
 include("../connection.php");
 
+$eid = $ename =$ecategory =$edescription =  $eallergy = $eprice =$equantity = '';
+   
 // Check if product_id is set
 if (isset($_GET['product_id'])&& isset($_GET['action'])) {
     // Get the product_id from the URL parameter
@@ -10,9 +13,8 @@ if (isset($_GET['product_id'])&& isset($_GET['action'])) {
     $stid = oci_parse($conn,$sql);
             oci_bind_by_name($stid, ':id' ,$editP);
             oci_execute($stid);
-}
-    $eid = $ename =$ecategory =$edescription =  $eallergy = $eprice =$equantity = '';
-    while($row = oci_fetch_array($stid, OCI_ASSOC)){
+
+ while($row = oci_fetch_array($stid, OCI_ASSOC)){
         $eid = $row['PRODUCT_ID'];
         $ename = $row['PRODUCT_NAME'];
         $ecategory = $row['PRODUCT_CATEGORY'];
@@ -21,21 +23,25 @@ if (isset($_GET['product_id'])&& isset($_GET['action'])) {
         $eprice = $row['PRODUCT_PRICE'];
         $equantity = $row['PRODUCT_QUANTITY'];
     }   
-
-       
+}
    
     
     // Check if the form has been submitted
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if (isset($_POST['updateproduct'])) {
     // Get the product data from the form
     $product_id = $_POST['pid'];
     $product_name = $_POST['pname'];
     $product_category = $_POST['pcategory'];
     $product_price = $_POST['pprice'];
     $product_quantity = $_POST['pquantity'];
+    $product_description = $_POST['description'];
+    $product_allergy = $_POST['allergy'];
+
+
+
 
     // Prepare the UPDATE query
-    $query = "UPDATE PRODUCT SET PRODUCT_NAME = :product_name, PRODUCT_CATEGORY = :product_category, PRODUCT_PRICE = :product_price, PRODUCT_QUANTITY = :product_quantity WHERE PRODUCT_ID = :id";
+    $query = 'UPDATE "PRODUCT" SET PRODUCT_NAME = :product_name, PRODUCT_CATEGORY = :product_category, PRODUCT_PRICE = :product_price, PRODUCT_QUANTITY = :product_quantity, PRODUCT_DESCRIPTION = :product_d, ALLERGY_INFORMATION = :product_a WHERE PRODUCT_ID = :pid';
 
     // Prepare the statement
     $stmt = oci_parse($conn, $query);
@@ -45,7 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     oci_bind_by_name($stmt, ":product_category", $product_category);
     oci_bind_by_name($stmt, ":product_price", $product_price);
     oci_bind_by_name($stmt, ":product_quantity", $product_quantity);
-    oci_bind_by_name($stmt, ":id", $product_id);
+    oci_bind_by_name($stmt, ":product_d", $product_description);
+    oci_bind_by_name($stmt, ":product_a", $product_allergy);
+    oci_bind_by_name($stmt, ":pid", $product_id);
+    
 
 
     // Execute the statement
@@ -66,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>edit product</title>
-    <link rel="stylesheet" href="useredit.css">
+    <link rel="stylesheet" href="aps.css">
 
 </head>
 <body>
@@ -76,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
      ?>
  <!-- Display the form with the current product data -->
         <div class="addproduct">
-        <form method='POST' action='' enctype='multipart/form-data'>
+        <form method='POST' action=''>
 
             <legend>Update Product:</legend>
             <div class="part1">
@@ -94,20 +103,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                     <div class="desc">
                         <label>Description:</label>
-                        <textarea name="description" id="d"  ><?php echo"$edescription"; ?></textarea>
+                        <textarea name="description" id="d"> <?php echo"$edescription"; ?> </textarea>
 
                         <label>Allergy information:</label>
                         <textarea name="allergy" id="a"><?php echo"$eallergy"; ?></textarea>
                     </div>
                     <div class="price">
                         <label>Price :</label>
-                        <input type='text' name='pprice' value="<?php echo"$eprice"; ?>">
+                        <input type='number' name='pprice' value="<?php echo"$eprice"; ?>">
                         <label>Quantity:</label>
-                        <input type="text" name="pquantity" value="<?php echo"$equantity"; ?>">
+                        <input type="number" name="pquantity" value="<?php echo"$equantity"; ?>">
                     </div>
                     <input type='submit' name='updateproduct' value='submit'>
                 </div>
             </div>
+        </form>    
     </div>
 
 </body>

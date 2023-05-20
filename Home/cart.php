@@ -12,7 +12,38 @@ if(isset($_GET['action'])){
     oci_execute($stmt);
   }
 }
-?>
+
+unset($_SESSION['discount']);
+
+  $drr = $discountamount='';
+  $discount=0;
+    if(isset($_POST['applydiscount'])){
+      if(empty($_POST['discount'])){
+        $drr = "Coupon code is required";
+      }
+      else{
+        $coupon_code = trim($_POST['discount']);
+        
+        $price = $_POST['price'];
+
+        
+
+        $sql = "SELECT * FROM DISCOUNT WHERE COUPON = :coupon";
+        $stmt = oci_parse($conn,$sql);
+        oci_bind_by_name($stmt , ":coupon" , $coupon_code);
+        oci_execute($stmt);
+          while($row = oci_fetch_array($stmt)){
+            $discount_id = $row['DISCOUNT_ID'];
+            $discount = (int)$row['DISCOUNT_PERCENT'];
+          }
+  
+         $discountamount = $price * ($discount/100);
+         $_SESSION['discount'] = number_format($discountamount,1);
+        
+      }
+    }
+  ?>
+  
 
 <!DOCTYPE html>
 <html lang="en">
@@ -46,12 +77,25 @@ if(isset($_GET['action'])){
           <li class="nav-item">
             <a class="nav-link" href="product.php">Products</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="deals.php">Deals</a>
-          </li>
         </ul>
         <div class="main">
-          <a href="login.php" class="user"><i class="fas fa-user"></i></a>
+          <!-- <a href="login.php" class="user"><i class="fas fa-user"></i></a> -->
+          <li class="nav-item dropdown">
+                <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                  <?php
+                    if(isset($_SESSION['user_ID'])){
+                      echo "<li><a class='dropdown-item' href='../customer/customerprofile.php'>View Profile</a></li>";
+                      echo "<li><a class='dropdown-item' href='../logout.php'>Logout</a></li>";
+                    }
+                    else{
+                      echo "<li><a class='dropdown-item' href='../login.php'>Login</a></li>";
+                    }
+                  ?>
+                </ul>
+              </li>
           <a href="cart.php" ><i class="fas fa-shopping-cart"></i></a>
           <a href="wishlist.php"> <i class="fas fa-heart"></i></a>
         </div>
@@ -76,7 +120,10 @@ if(isset($_GET['action'])){
     </thead>
     <tbody>
       <?php
+        unset($_SESSION['cart_id']);
         $user_id = $_SESSION['user_ID'];
+        $total = 0;
+        $price = 0;
         // Prepare the SQL query
         $query = "
             SELECT CART_PRODUCT.*
@@ -87,10 +134,12 @@ if(isset($_GET['action'])){
         $stid = oci_parse($conn, $query);
         oci_bind_by_name($stid , ":user_id" , $user_id);
         oci_execute($stid);
-
-        $total = 0;
-        $price = 0;
+        
         while($data = oci_fetch_array($stid)){
+
+          $cart_id = $data['CART_ID'];
+          $_SESSION['cart_id'] = $cart_id;
+          
           $product_id = $data['PRODUCT_ID'];
           $quantity = $data['QUANTITY'];
           
@@ -120,14 +169,20 @@ if(isset($_GET['action'])){
     </tbody>
   </table>
 </div>
+
 <div id="cart-add" class="section-p1">
-  <!-- <div id="discount">
+<div id="discount">
     <h3>Apply Discount</h3>
+    <?php echo $drr; ?>
     <div>
-      <input type="text" placeholder="Enter the discount">
-      <button class="normal">Apply</button>
+      <form action="" method="post">
+        <input type="hidden" value='<?php echo $total; ?>' name='price'>
+        <input type="text" placeholder="Enter coupon code" name='discount'>
+        <button class="normal" name='applydiscount'>Apply</button>
+      </form>
     </div>
-  </div> -->
+  </div>
+
   <div id="subtotal">
     <h3>Cart Totals</h3>
     <table>
@@ -135,19 +190,41 @@ if(isset($_GET['action'])){
         <td>Cart Subtotal</td>
         <td> &pound; <?php echo $total;?></td>
       </tr>
-      <!-- <tr>
-        <td>Discount</td>
-        <td>$0.00</td>
-      </tr> -->
+      <tr>
+        <td>Discount Amount</td>
+        <td> &pound; 
+          <?php 
+         if(isset($_SESSION['discount'])){
+            echo $_SESSION['discount'];
+         }
+         else{
+          echo $discount;
+         }
+         ?></td>
+      </tr>
       <tr>
         <td><strong>Total</strong></td>
-        <td><strong> &pound; <?php echo $total;?></strong></td>
+        <td><strong> &pound; 
+          <?php 
+                        unset($_SESSION['total']);
+                        if(isset($_SESSION['discount'])){
+                          $total_amount = $total -$_SESSION['discount'];
+                          $_SESSION['total'] = $total_amount; 
+                         echo $total_amount;
+                        }
+                        else {
+                          $_SESSION['total'] = $total; 
+                         echo $total;
+                        }
+                        ?>
+            </strong>
+          </td>
       </tr>
     </table>
 
     <?php 
       if(isset($_SESSION['user_ID'])){
-        echo "    <button class='normal' onclick='proceedprocess()' >Procced to select collection slot</button>";
+        echo "<button class='normal' onclick='proceedprocess()' >Procced to select collection slot</button>";
       }
       else{
         echo "<button class='normal' onclick='loginform()'>Procced to select collection slot</button>";
@@ -179,10 +256,9 @@ if(isset($_GET['action'])){
 </div>
 <div class="footer">
     <div class="box1">
-        <a href="homepage.html">Home</a>
-        <a href="product.html">Product</a>            
-        <a href="deals.html">Deals</a>
-        <a href="contact.html">Contact</a>
+        <a href="homepage.php">Home</a>
+        <a href="product.php">Product</a>            
+        <a href="contact_us.php">Contact</a>
     </div>
     <div class="box2">
         <h3>CONTACT</h3>

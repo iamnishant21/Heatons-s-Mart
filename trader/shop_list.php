@@ -36,6 +36,8 @@ session_start();
                 <th>SHOP ADDRESS</th>
                 <th>SHOP PHONENUMBER</th>
                 <th>SHOP CATEGORY</th>
+                <th>STATUS</th>
+
                 <th>Action</th>
             </tr>
 
@@ -44,11 +46,14 @@ session_start();
             include("../connection.php");
 
             // Query to fetch product data
-            $query = 'SELECT * FROM "SHOP" WHERE SHOP_CATEGORY =:S_CATEGORY ';
+            $status = 'verified';
+            $query = 'SELECT * FROM "SHOP" WHERE SHOP_CATEGORY =:S_CATEGORY AND SHOP_STATUS = :status ';
 
             // Execute the query
             $stmt = oci_parse($conn, $query);
             oci_bind_by_name($stmt, ':S_CATEGORY', $_SESSION['category']);
+            oci_bind_by_name($stmt, ':status', $status);
+
             oci_execute($stmt);
 
             // Loop through the results and display data in table rows
@@ -59,6 +64,7 @@ session_start();
                 echo "<td>" . $row['SHOP_ADDRESS'] . "</td>";
                 echo "<td>" . $row['SHOP_PHONENUMBER'] . "</td>";
                 echo "<td>" . $row['SHOP_CATEGORY'] . "</td>";
+                echo "<td>" . $row['SHOP_STATUS'] . "</td>";
                 echo "<td>
                 <a href='editShop.php?shop_id=".$row['SHOP_ID']."&action=edit'>Edit <span class='material-symbols-outlined'>
                     pen_size_4

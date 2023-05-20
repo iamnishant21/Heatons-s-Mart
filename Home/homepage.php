@@ -3,7 +3,7 @@
 
   if(isset($_POST['searchname'])){
     $p_name = strtolower(trim($_POST['productname']));
-    header("location:product.php?productname=".$p_name."&search=search");
+    header("location:product.php?productname=".$p_name."&search=$p_name");
   }
 ?>
 <!DOCTYPE html>
@@ -56,21 +56,22 @@
           <li class="nav-item">
             <a class="nav-link" href="product.php">Products</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="deals.php">Deals</a>
-          </li>
         </ul>
         <div class="main">
-        <!-- <a href="login.php" class="user"><i class="fas fa-user"></i></a> -->
              <li class="nav-item dropdown">
                 <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fas fa-user"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-dark">
-                  <li><a class="dropdown-item" href="../customer/customerprofile.php">View Profile</a></li>
-                  <li><a class="dropdown-item" href="../login.php">Login</a></li>
-                  <li><a class="dropdown-item" href="../logout.php">Logout</a></li>
-
+                  <?php
+                    if(isset($_SESSION['user_ID'])){
+                      echo "<li><a class='dropdown-item' href='../customer/customerprofile.php'>View Profile</a></li>";
+                      echo "<li><a class='dropdown-item' href='../logout.php'>Logout</a></li>";
+                    }
+                    else{
+                      echo "<li><a class='dropdown-item' href='../login.php'>Login</a></li>";
+                    }
+                  ?>
                 </ul>
               </li>
               
@@ -120,13 +121,13 @@
       $product_image = $row['PRODUCT_IMAGE'];
 
       echo"<div class='product'>
-           <img src='image/$product_image' onclick='viewproduct($product_id)'>
+           <img src='../trader/uploads/$product_image' onclick='viewproduct($product_id)'>
            <div class='product-info'>
            <h3>$product_name</h3>
            <p>Price: &pound; $product_price</p>
            <div class='product-icons'>";
             
-          if($_SESSION['user_ID']){
+          if(isset($_SESSION['user_ID'])){
             echo "<div class='add-to-cart' onclick='addtocart($product_id,1)'><i class='fa fa-shopping-cart'></i></div>";
             echo "<div class='add-to-wishlist'  onclick='addtowishlist($product_id)' ><i class='fa fa-heart'></i></div>";
           }
@@ -161,13 +162,13 @@
       $product_image = $row['PRODUCT_IMAGE'];
 
       echo"<div class='product'>
-           <img src='image/$product_image'>
+           <img src='../trader/uploads/$product_image' onclick='viewproduct($product_id)'>
            <div class='product-info'>
            <h3>$product_name</h3>
            <p>Price: &pound; $product_price</p>
            <div class='product-icons'>";
 
-          if($_SESSION['user_ID']){
+          if(isset($_SESSION['user_ID'])){
             echo "<div class='add-to-cart' onclick='addtocart($product_id,1)'><i class='fa fa-shopping-cart'></i></div>";
             echo "<div class='add-to-wishlist' onclick='addtowishlist($product_id)'><i class='fa fa-heart'></i></div>";
           }
@@ -195,8 +196,7 @@
         <div class="box1">
           <a href="homepage.php">Home</a>
           <a href="product.php">Product</a>            
-          <a href="deals.html">Deals</a>
-          <a href="contact.html">Contact</a>
+          <a href="contact_us.php">Contact</a>
         </div>
         <div class="box2">
           <h3>CONTACT</h3>

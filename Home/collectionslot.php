@@ -5,7 +5,15 @@
 
     if(isset($_POST['payment'])){
       $slot_id = $_POST['slot_id'];
-      $_SESSION['slot_id'];
+      $_SESSION['slot_id'] = $slot_id;
+
+      $sql = 'INSERT INTO "ORDER" (TOTAL_AMOUNT,SLOT_ID,CART_ID) VALUES(:total_amount, :slot_id,:cart_id)';
+      $stid = oci_parse($conn , $sql);
+      oci_bind_by_name($stid , ":total_amount" ,$_SESSION['total']);
+      oci_bind_by_name($stid , ":slot_id" , $_SESSION['slot_id']);
+      oci_bind_by_name($stid, ":cart_id" , $_SESSION['cart_id']);
+      oci_execute($stid);
+
       header('location:invoice.php');
     }
   
@@ -83,7 +91,7 @@
                   oci_execute($stmt);
                   while($row = oci_fetch_array($stmt)){
                     $id = $row['SLOT_ID'];
-                    echo "<div class='col-md-5 col-4 my-3 px-4'><input type='radio' name='slot_id' value='$id' > " . $row['COLLECTION_TIME'] .", ".$row['COLLECTION_DAY']."</div>";
+                    echo "<div class='col-md-5 col-4 my-3 px-4'><input type='radio' name='slot_id' value='$id' > " . $row['COLLECTION_TIME'] .", ".$row['COLLECTION_DATE']."</div>";
                     // echo "<div class='col-md-5 col-4 my-3 px-4'><div class='cell py-1' >".."</div></div>";
                   }
 
@@ -116,10 +124,9 @@
 </div>
 <div class="footer">
     <div class="box1">
-        <a href="homepage.html">Home</a>
-        <a href="product.html">Product</a>            
-        <a href="deals.html">Deals</a>
-        <a href="contact.html">Contact</a>
+        <a href="homepage.php">Home</a>
+        <a href="product.php">Product</a>            
+        <a href="contact_us.php">Contact</a>
     </div>
     <div class="box2">
         <h3>CONTACT</h3>

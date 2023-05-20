@@ -44,17 +44,30 @@ if(isset($_GET['action'])){
             <a class="nav-link" href="homepage.php">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="contact_us.html">Contact Us</a>
+            <a class="nav-link" href="contact_us.php">Contact Us</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="product.php">Products</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="deals.php">Deals</a>
-          </li>
         </ul>
         <div class="main">
-          <a href="login.php" class="user"><i class="fas fa-user"></i></a>
+          <!-- <a href="login.php" class="user"><i class="fas fa-user"></i></a> -->
+          <li class="nav-item dropdown">
+                <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                  <?php
+                    if(isset($_SESSION['user_ID'])){
+                      echo "<li><a class='dropdown-item' href='../customer/customerprofile.php'>View Profile</a></li>";
+                      echo "<li><a class='dropdown-item' href='../logout.php'>Logout</a></li>";
+                    }
+                    else{
+                      echo "<li><a class='dropdown-item' href='../login.php'>Login</a></li>";
+                    }
+                  ?>
+                </ul>
+              </li>
           <a href="cart.php" ><i class="fas fa-shopping-cart"></i></a>
           <a href="wishlist.php"> <i class="fas fa-heart"></i></a>
         </div>
@@ -63,15 +76,14 @@ if(isset($_GET['action'])){
   </nav>
   <!-- banner -->
   <div id="page-header" class="cart-header">
-    <h2>myWISHLIST</h2>
+    <h2>MYWISHLIST</h2>
   </div>
-  <!-- cart -->
   
 	<div class="cart-wrap">
 		<div class="container">
 	        <div class="row">
 			    <div class="col-md-12">
-			        <div class="main-heading mb-10">Heaton's wishlist</div>
+			        <!-- <div class="main-heading mb-10">Heaton's wishlist</div> -->
 			        <div class="table-wishlist">
 				        <table cellpadding="0" cellspacing="0" border="0" width="100%">
 				        	<thead>
@@ -162,10 +174,9 @@ if(isset($_GET['action'])){
     </div>
     <div class="footer">
         <div class="box1">
-            <a href="homepage.html">Home</a>
-            <a href="product.html">Product</a>            
-            <a href="deals.html">Deals</a>
-            <a href="contact.html">Contact</a>
+            <a href="homepage.php">Home</a>
+            <a href="product.php">Product</a>            
+            <a href="contact_us.php">Contact</a>
         </div>
         <div class="box2">
             <h3>CONTACT</h3>

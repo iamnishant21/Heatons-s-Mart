@@ -45,7 +45,7 @@ include('../connection.php');
 
 <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container">
-      <a class="navbar-brand" href="homepage.html"><img src="Heaton's Mart.png"></a>
+      <a class="navbar-brand" href="homepage.php"><img src="Heaton's Mart.png"></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
         <span class="icon-bar"></span>
@@ -62,9 +62,6 @@ include('../connection.php');
           </li>
           <li class="nav-item">
             <a class="nav-link" href="product.php">Products</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="deals.php">Deals</a>
           </li>
         </ul>
         <div class="main">
@@ -87,9 +84,10 @@ include('../connection.php');
 				<p class="product-price"><?php echo "<p>Price: &pound; $p_price</p>"; ?></p>
 				<p class="product-description"><?php echo "<p>Product Description: $p_description</p>"; ?></p>
 				<p class="product-allergy"><?php echo "<p>Allergy Information: $p_allergy</p>"; ?></p>
-				<div class="quantity">
+				<p class="product-price"><?php echo "<p>Stock: $p_stock</p>"; ?></p>
+        <div class="quantity">
 					<label for="quantity" class="quantity-label">Quantity</label>
-          <input type="number" id="quantity" value="1" min="1"  max="20">
+          <input type="number" id="quantity" value="1" min="1"  max="<?php echo $p_stock; ?>">
           <input type="hidden" id="product_id" value="<?php echo $p_id; ?>" >
 
         </div>
@@ -108,12 +106,67 @@ include('../connection.php');
         ?>
         
       </div>
+
+      
+      <?php
+        echo "<p class='product-price mt-5 '>
+        Reviews </p> ";
+          $count =$ratecount= 0;
+            $sql = 'SELECT R.*, U.*
+                    FROM "REVIEW" R
+                    JOIN "USER" U ON R.USER_ID = U.USER_ID
+                    WHERE R.PRODUCT_ID = :product_id';
+
+            $stid = oci_parse($conn, $sql);
+            oci_bind_by_name($stid, ":product_id", $p_id);
+            oci_execute($stid);
+
+            while ($row = oci_fetch_array($stid)) {
+                $count +=1;
+                $username = $row['FIRSTNAME'] . " " . $row['LASTNAME'];
+                $review = $row['REVIEW_COMMENT'];
+
+                if(!empty($row['REVIEW_SCORE'])){
+                  $rating = (int)$row['REVIEW_SCORE'];
+                }
+                $ratecount += $rating;
+                echo "<p>";
+                echo " $username :<p> $review</p>";
+                echo " </p>";
+            }
+            ?>
+
+            
+      <div class="buttons">
+      
+        <?php
+          $finalrating = number_format($ratecount/$count , 1);
+          echo "<p class='product-price mt-5 '>Rating (".$finalrating."/".$count.") </p>";
+            
+          if(isset($_SESSION['user_ID'])){
+            echo "<button class='btn-cart' onclick='giverating($p_id)'>Add to review</button>";
+
+          }
+          else{
+            echo "<button class='btn-cart' onclick='login()'> Add to review</button>";
+
+          }
+        ?>
+        
+      </div>
       </div>
     </div>
   </div>
 
   <script>
 
+      function giverating(p_id) {
+            window.location.href = "review/review.php?p_id=" + p_id;
+        }
+
+        function login() {
+            window.location.href = "../login.php" ;
+        }
     function cartadd(){
 
       const product_id = document.getElementById('product_id').value;
@@ -139,7 +192,7 @@ include('../connection.php');
                 alert(this.responseText);
               }
             };
-            xml.open("GET", "addCartWishlist.php?action=addwishlist&id=" + id, true);
+            xml.open("GET", "addCartWishlist.php?action=addwishlist&id=" + pid, true);
             xml.send();
         }
 
@@ -156,10 +209,9 @@ include('../connection.php');
     </div>
     <div class="footer">
       <div class="box1">
-        <a href="homepage.html">Home</a>
-        <a href="product.html">Product</a>            
-        <a href="deals.html">Deals</a>
-        <a href="contact.html">Contact</a>
+        <a href="homepage.php">Home</a>
+        <a href="product.php">Product</a>            
+        <a href="contact_us.php">Contact</a>
       </div>
       <div class="box2">
         <h3>CONTACT</h3>

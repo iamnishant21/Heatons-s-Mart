@@ -177,10 +177,16 @@
         <div class="one">
             <img src="cart7.jpg" alt="">
             <div class="onei">
-                <h3>Welcome to Heaton's Mart</h3>
+                <h3 onclick="home()">Welcome to Heaton's Mart</h3>
                 <p>Your Neighbourhood Grocers</p>
             </div>
         </div>
+        <script>
+            function home(){
+                document.location.href = "../Home/homepage.php";
+            }
+            
+        </script>
         <div class="two">
             <div class="twoi">
                 <a href="customerSignup.php" id="customer">Customer</a>

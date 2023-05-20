@@ -25,7 +25,5 @@ include('../connection.php');
         header("location:../login.php");
     }
     
-    
-
 
 ?>

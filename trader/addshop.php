@@ -12,6 +12,7 @@ if (isset($_POST['subShop'])) {
     $shop_category = $_POST['scategory'];
     $shop_description = $_POST['sdescription'];
 
+
     if(strlen($shop_phonenumber) < 10 || strlen($shop_phonenumber) > 10){
         $error_count+=1;
         $error_messege = "10 digits are required";
@@ -38,22 +39,24 @@ if (isset($_POST['subShop'])) {
             }
 
             if($error_count == 0)  {
-               
+                $verify='waiting';
+
 
                 // echo $user_id;
-                    $sql = 'INSERT INTO "SHOP" (SHOP_NAME,SHOP_ADDRESS,SHOP_PHONENUMBER,SHOP_CATEGORY,SHOP_DESCRIPTION,USER_ID) 
-                        VALUES (:SHOP_NAME,:HSHOP_ADDRESS,:HPHONE_NUMBER,:HCATEGORY,:HDESCRIPTION,:user_id)';
+                    $sql = 'INSERT INTO "SHOP" (SHOP_NAME,SHOP_ADDRESS,SHOP_PHONENUMBER,SHOP_CATEGORY,SHOP_DESCRIPTION,SHOP_STATUS,USER_ID) 
+                        VALUES (:SHOP_NAME,:HSHOP_ADDRESS,:HPHONE_NUMBER,:HCATEGORY,:HDESCRIPTION, :shop_verify,:user_id)';
 
                     $stid = oci_parse($conn,$sql);
                     
                     // oci_bind_by_name($stid ,':HSHOP_ID',$shop_id);  
-                    oci_bind_by_name($stid, ':HUSER_ID', $_SESSION['ID']);            
                     oci_bind_by_name($stid ,':SHOP_NAME',$shop_name);
                     oci_bind_by_name($stid ,':HSHOP_ADDRESS',$shop_address);
                     oci_bind_by_name($stid ,':HPHONE_NUMBER',$shop_phonenumber);
                     oci_bind_by_name($stid ,':HCATEGORY',$shop_category);
                     oci_bind_by_name($stid ,':HDESCRIPTION',$shop_description);
                     oci_bind_by_name($stid ,':user_id',$_SESSION['trader_ID']);
+                    oci_bind_by_name($stid ,':shop_verify',$verify);
+
 
                     if(oci_execute($stid)){
                         header('location:shop_list.php');

@@ -42,7 +42,6 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-dark">
                   <li><a class="dropdown-item" href="shop_list.php">Shop List</a></li>
-                  <li><a class="dropdown-item" href="addshop.php">Add Shop</a></li>
 
                 </ul>
               </li>
@@ -67,8 +66,8 @@
                   Profile
                 </button>
                 <ul class="dropdown-menu dropdown-menu-dark">
-                  <li><a class="dropdown-item" href="#">View Profile</a></li>
-                  <li><a class="dropdown-item" href="../logout.php">Logout</a></li>
+                  <li><a class="dropdown-item" href="adminprofile.php">View Profile</a></li>
+                  <!-- <li><a class="dropdown-item" href="../logout.php">Logout</a></li> -->
 
                 </ul>
               </li>

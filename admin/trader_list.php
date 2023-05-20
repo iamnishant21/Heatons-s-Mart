@@ -77,9 +77,7 @@
                     
                 }else{
                     echo "<td>
-                    <a href='remove.php?id=".$row['USER_ID']."&action=decline'>Remove <span class='material-symbols-outlined'>
-                    delete
-                    </span></a>
+                    <a href='accept.php?id=".$row['USER_ID']."&action=waiting'>deactivate</a>
                 </td>";
                 }
                 echo "</tr>"; 

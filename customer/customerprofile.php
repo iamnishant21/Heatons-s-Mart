@@ -3,8 +3,7 @@
   session_start();
 
   include('../connection.php');
-  // $user = 120;
-  $firstname =  $lastname = $email = $gender =  $contact = $email =$address = $dob=''; 
+  $firstname =  $lastname = $email = $gender =  $contact = $address = $dob=''; 
   $sql = 'SELECT * FROM "USER" WHERE USER_ID = :id ';
   $stid= oci_parse($conn,$sql);
   // oci_bind_by_name($stid, ':id' , $user );
@@ -55,9 +54,8 @@ if(isset($_POST['cButton'])){
 
        // Parse the SQL statement
         $stmt = oci_parse($conn, $sql);
-        $user = 120;
         // Bind the parameters
-        oci_bind_by_name($stid, ':id' , $_SESSION['user_ID'] );
+        oci_bind_by_name($stmt, ':id' , $_SESSION['user_ID'] );
         // oci_bind_by_name($stmt, ':id' , $user );
         oci_bind_by_name($stmt, ':cfname', $c_fname);
         oci_bind_by_name($stmt, ':clname', $c_lname);
@@ -81,10 +79,8 @@ if(isset($_POST['cButton'])){
       $sql = 'UPDATE "USER" SET FIRSTNAME = :cfname, LASTNAME = :clname, EMAIL_ADDRESS = :cemail, GENDER = :cgender, DATE_OF_BIRTH = :cdob, PHONE_NUMBER = :cphone, ADDRESS = :caddress, USER_IMAGE = :cpimage WHERE USER_ID = :id';
        // Parse the SQL statement
         $stmt = oci_parse($conn, $sql);
-        $user = 120;
         // Bind the parameters
-        // oci_bind_by_name($stid, ':id' , $_SESSION['user_ID'] );
-        oci_bind_by_name($stmt, ':id' , $user );
+        oci_bind_by_name($stmt, ':id' , $_SESSION['user_ID'] );
         oci_bind_by_name($stmt, ':cfname', $c_fname);
         oci_bind_by_name($stmt, ':clname', $c_lname);
         oci_bind_by_name($stmt, ':cemail', $c_email);
@@ -92,7 +88,7 @@ if(isset($_POST['cButton'])){
         oci_bind_by_name($stmt, ':cdob', $c_dob);
         oci_bind_by_name($stmt, ':cphone', $contact);
         oci_bind_by_name($stmt, ':caddress', $c_address);
-        oci_bind_by_name($stmt, ':cpimage',   $prevImage );
+        oci_bind_by_name($stmt, ':cpimage', $prevImage );
         $res = oci_execute($stmt);
         if ($res){
             header('location:customerprofile.php');
@@ -209,7 +205,7 @@ if(isset($_POST['cButton'])){
 <body>
     <nav class="navbar navbar-expand-lg navbar-light ">
         <div class="container">
-          <a class="navbar-brand" href="homepage.php"><img src="Heaton's Mart.png"></a>
+          <a class="navbar-brand" href="../Home/homepage.php"><img src="../Home/Heaton's Mart.png"></a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
             <span class="icon-bar"></span>
@@ -222,20 +218,15 @@ if(isset($_POST['cButton'])){
                 <a class="nav-link" href="../Home/homepage.php">Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="contact_us.html">Contact Us</a>
+                <a class="nav-link" href="contact_us.php">Contact Us</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="../Home/product.php">Products</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="deals.php">Deals</a>
+                <a class="nav-link" href="customerprofile.php">Customer Profile</a>
               </li>
             </ul>
-            <div class="main">
-              <a href="customerprofile.php" class="user"><i class="fas fa-user"></i></a>
-              <a href="cart.html" ><i class="fas fa-shopping-cart"></i></a>
-              <a href="wishlist.html"> <i class="fas fa-heart"></i></a>
-            </div>
           </div>
         </div>
       </nav>  
@@ -249,7 +240,6 @@ if(isset($_POST['cButton'])){
                             <div class="card-body">
                                 <div class="d-flex flex-column align-items-center text-center">
 
-                                    <!-- <img src="Heaton's Mart.png" alt="Customer photo" class="rounded-circle p-1 bg-dark" width="110"> -->
                                     <?php
                                       echo "<img src='uploads/$cimage' lt='Customer photo' class='rounded-circle p-1 bg-dark' width='110'>";
                                     ?>
@@ -263,16 +253,16 @@ if(isset($_POST['cButton'])){
                                 <hr class="my-4">
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                                        <h6 class="mb-0"><a href="cart.html" style="color:black"><i class="fas fa-shopping-cart"></i> View myCart </a></h6>
+                                        <h6 class="mb-0"><a href="../Home/cart.php" style="color:black"><i class="fas fa-shopping-cart"></i> View myCart </a></h6>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                                        <h6 class="mb-0"><a href="wishlist.html" style="color:black"><i class="fas fa-heart"></i> View myWishlist </a></h6>
+                                        <h6 class="mb-0"><a href="../Home/wishlist.php" style="color:black"><i class="fas fa-heart"></i> View myWishlist </a></h6>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
                                         <h6 class="mb-0"><a href="orderhistory.html" style="color:black"><i class="fas fa-shopping-bag"></i> Order History </a></h6>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                                        <h6 class="mb-0"><a href="logout.php" style="color:black"><i class="fas fa-sign-out-alt"></i> Log Out </a></h6>
+                                        <h6 class="mb-0"><a href="../logout.php" style="color:black"><i class="fas fa-sign-out-alt"></i> Log Out </a></h6>
                                     </li>
                                 </ul>
                             </div>
@@ -416,10 +406,9 @@ if(isset($_POST['cButton'])){
         </div>
         <div class="footer">
             <div class="box1">
-                <a href="homepage.html">Home</a>
-                <a href="product.html">Product</a>            
-                <a href="deals.html">Deals</a>
-                <a href="contact.html">Contact</a>
+                <a href="../Home/homepage.php">Home</a>
+                <a href="../Home/product.php">Product</a>            
+                <a href="../Home/contact_us.php">Contact</a>
             </div>
             <div class="box2">
                 <h3>CONTACT</h3>

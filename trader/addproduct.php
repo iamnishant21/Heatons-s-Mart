@@ -29,10 +29,8 @@ if (isset($_POST['subproduct'])) {
     $stmt = oci_parse($conn, $sql);
 
     // Bind the parameters
-    oci_bind_by_name($stmt, ':pname', $pname);
-    // oci_bind_by_name($stmt, ':pcategory', $_SESSION['category']);
+    oci_bind_by_name($stmt, ':pname', strtolower($pname));
     oci_bind_by_name($stmt, ':pcategory', $_SESSION['category']);
-
     oci_bind_by_name($stmt, ':description', $description);
     oci_bind_by_name($stmt, ':allergy', $allergy);
     oci_bind_by_name($stmt, ':pprice', $pprice);
