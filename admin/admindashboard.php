@@ -42,7 +42,6 @@
                             echo "Number of trader : ".$totaltrader;
                         ?>
                 </p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
             </div>
 
 
@@ -61,7 +60,6 @@
                             echo"Number of shop : ".$totalshop;
                         ?>
                 </p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
             </div>
 
             <div class="card-body border border-primary rounded">
@@ -78,7 +76,6 @@
                             echo"Number of product : ".$totalproduct;
                         ?>
               </p>
-              <a href="#" class="btn btn-primary">Go somewhere</a>
             </div>
             
             
@@ -98,24 +95,23 @@
                         
                 ?>
               </p>
-              <a href="#" class="btn btn-primary">Go somewhere</a>
             </div>
 
             <div class="card-body border border-primary rounded">
-              <h5 class="card-title">Total Product</h5>
+              <h5 class="card-title">ORDER HISTORY</h5>
               <p class="card-text">
               <?php
                     
                     
                 ?>
               </p>
-              <a href="#" class="btn btn-primary">Go somewhere</a>
+              <a href="orderhistory.php" class="btn btn-primary">click for order history</a>
             </div>
 
             <div class="card-body border border-primary rounded">
                 <h5 class="card-title">Report</h5>
                 <p class="card-text">report</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+                <a href="#" class="btn btn-primary">Go to report</a>
             </div>
             
         </div>

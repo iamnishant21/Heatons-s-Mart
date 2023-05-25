@@ -33,7 +33,7 @@
 
           $sql = "INSERT INTO ORDER_PRODUCT(ORDER_ID,PRODUCT_ID,ORDER_QUANTITY) VALUES (:order_id,:product_id,:quantity)";
           $stid = oci_parse($conn, $sql);
-          oci_bind_by_name($stid, ":order_id", $order_id);
+          oci_bind_by_name($stid, ":order_id", $_SESSION['order_id']);
           oci_bind_by_name($stid, ":product_id", $product_id);
           oci_bind_by_name($stid, ":quantity", $quantity);
           oci_execute($stid);
@@ -82,7 +82,7 @@ include('paypal/payment.php');
 					<p class="invoice bold">INVOICE</p>
 					<p class="invoice_no">
 						<span class="bold">Invoice</span>
-						<span>#<?php echo $invoice_no;?></span>
+						<span>#<?php echo $invoice_no; ?></span>
 					</p>
 					<p class="date">
 						<span class="bold">Date</span>
@@ -117,7 +117,7 @@ include('paypal/payment.php');
 				<div class="table_body">
 
 				<?php 
-					$price = 0;
+					
 					$count = 0;
 					$prodsql ="SELECT op.*, p.*
 					FROM ORDER_PRODUCT op
@@ -130,9 +130,29 @@ include('paypal/payment.php');
 					oci_execute($stmts);
 					
 					while($row = oci_fetch_array($stmts)){
+						$productprice = 0;
+						$totalprice = 0;
 						$count += 1;
 						$quantity = (int)$row['ORDER_QUANTITY'];
-						$price = $quantity * (int)$row['PRODUCT_PRICE'];
+						$product_price = $row['PRODUCT_PRICE'];
+						
+						if (!empty($row['DISCOUNT_ID'])) 
+						{
+							$sql = 'SELECT DISCOUNT_PERCENT FROM "DISCOUNT" WHERE DISCOUNT_ID = :disc_id';
+							$stmt = oci_parse($conn, $sql);
+							oci_bind_by_name($stmt, ":disc_id", $row['DISCOUNT_ID']);
+							oci_execute($stmt);
+							while ($data = oci_fetch_array($stmt, OCI_ASSOC)) {
+								$discount = (int)$data['DISCOUNT_PERCENT'];
+								$discount_price = $product_price - $product_price * ($discount / 100);
+								$productprice =  $quantity * $discount_price;
+								$totalprice += $quantity * $discount_price;
+							}
+							} else {
+								$discount_price = $product_price;
+								$productprice =  $quantity * $discount_price;
+								$totalprice += $quantity * $discount_price;
+							}
 
 						echo "
 						<div class='row'>
@@ -141,16 +161,15 @@ include('paypal/payment.php');
 						</div>
 						<div class='col col_des'>
 							<p class='bold'>".$row['PRODUCT_NAME']."</p>
-							<p>".substr($row['PRODUCT_DESCRIPTION'] , 0, 50)."</p>
 						</div>
 						<div class='col col_price'>
-							<p>&pound; ".$row['PRODUCT_PRICE']."</p>
+							<p>&pound; ".$product_price."</p>
 						</div>
 						<div class='col col_qty'>
 							<p>".$quantity."</p>
 						</div>
 						<div class='col col_total'>
-							<p>&pound; ".$price."</p>
+							<p>&pound; ".$totalprice."</p>
 						</div>
 					</div>";
 					}
@@ -187,7 +206,8 @@ include('paypal/payment.php');
 								unset($_SESSION['finalamount']);
 									$finalamount =$taxamount + $_SESSION['total'];
 									echo $finalamount;
-									$_SESSION['finalamount'] = $finalamount;
+									$_SESSION['finalamount'] = number_format($finalamount,2);
+									
 							 ?>
 						</span>
 						
@@ -217,7 +237,12 @@ include('paypal/payment.php');
 			<p>Thank you and Best Wishes</p>
 			<div class="terms">
 		        <p class="tc bold">Terms & Coditions</p>
-		        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit non praesentium doloribus. Quaerat vero iure itaque odio numquam, debitis illo quasi consequuntur velit, explicabo esse nesciunt error aliquid quis eius!</p>
+				<p>At HeatonsMart, we are your ultimate destination for all your grocery needs. We bring together 
+                  a delightful selection of bakery products, fresh meats from our butcher shop, a wide variety of fish, 
+                  and an extensive range of grocery items. With HeatonsMart, you can conveniently shop for all your kitchen essentials
+                  in one place.  Join us at HeatonsMart and experience the convenience, quality, and variety that we have to offer. Start 
+                  your grocery shopping journey with us today!
+        </p>
 		    </div>
 		</div>
 	</div>

@@ -51,8 +51,7 @@ if(isset($_GET['action'])){
           </li>
         </ul>
         <div class="main">
-          <!-- <a href="login.php" class="user"><i class="fas fa-user"></i></a> -->
-          <li class="nav-item dropdown">
+             <li class="nav-item dropdown">
                 <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fas fa-user"></i>
                 </button>
@@ -68,8 +67,18 @@ if(isset($_GET['action'])){
                   ?>
                 </ul>
               </li>
+              
           <a href="cart.php" ><i class="fas fa-shopping-cart"></i></a>
-          <a href="wishlist.php"> <i class="fas fa-heart"></i></a>
+
+          <?php
+          if(isset($_SESSION['user_ID'])){
+
+          echo"<a href='wishlist.php'> <i class='fas fa-heart'></i></a>";
+          } else{
+           echo" <a href='../login.php'> <i class='fas fa-heart'></i></a>";
+
+          }
+          ?>
         </div>
       </div>
     </div>
@@ -166,10 +175,13 @@ if(isset($_GET['action'])){
     <div class="about">
         <div class="aboutus">
             <h3>ABOUT US</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. 
-              Duis vulputate commodo lectus, ac blandit elit tincidunt id. Sed rhoncus, tortor sed eleifend tristique, tortor mauris
-              molestie elit, et lacinia ipsum quam nec dui. Quisque nec mauris sit amet elit iaculis pretium sit amet quis magna. 
-              Aenean velit odio, elementum in tempus ut, vehicula eu diam.
+            <p>At HeatonsMart, we are your ultimate destination for all your grocery needs. We bring together 
+          a delightful selection of bakery products, fresh meats from our butcher shop, a wide variety of fish, 
+          and an extensive range of grocery items. With HeatonsMart, you can conveniently shop for all your kitchen essentials
+           in one place.  Join us at HeatonsMart and experience the convenience, quality, and variety that we have to offer. Start 
+           your grocery shopping journey with us today!
+        </p>
+        <h3>Promo Code = HM2023, HM1234, HM0246, HM0987</h3>
         </div>
     </div>
     <div class="footer">
@@ -188,9 +200,7 @@ if(isset($_GET['action'])){
             </div>
         </div>
     </div>  
-      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+      
 
       <script>
         function addtocart(id, quantity){
@@ -204,6 +214,15 @@ if(isset($_GET['action'])){
             xml.send();
         }
       </script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" 
+     crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
     </body>
     </html>
     

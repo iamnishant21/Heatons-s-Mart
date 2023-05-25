@@ -39,7 +39,7 @@
             include("../connection.php");
 
             // Query to fetch product data
-            $query = 'SELECT * FROM "SHOP"';
+            $query = 'SELECT * FROM "SHOP" ';
 
             // Execute the query
             $stmt = oci_parse($conn, $query);

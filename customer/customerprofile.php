@@ -259,7 +259,7 @@ if(isset($_POST['cButton'])){
                                         <h6 class="mb-0"><a href="../Home/wishlist.php" style="color:black"><i class="fas fa-heart"></i> View myWishlist </a></h6>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                                        <h6 class="mb-0"><a href="orderhistory.html" style="color:black"><i class="fas fa-shopping-bag"></i> Order History </a></h6>
+                                        <h6 class="mb-0"><a href="orderhistory.php" style="color:black"><i class="fas fa-shopping-bag"></i> Order History </a></h6>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
                                         <h6 class="mb-0"><a href="../logout.php" style="color:black"><i class="fas fa-sign-out-alt"></i> Log Out </a></h6>

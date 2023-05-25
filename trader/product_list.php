@@ -44,12 +44,13 @@ session_start();
             include("../connection.php");
 
             // Query to fetch product data
-            $query = 'SELECT * FROM "PRODUCT" WHERE PRODUCT_CATEGORY =:P_CATEGORY ';
+            $verify = 'verified';
+            $query = 'SELECT * FROM "PRODUCT" WHERE PRODUCT_CATEGORY =:P_CATEGORY AND PRODUCT_STATUS= :verify ';
 
             // Execute the query
             $stmt = oci_parse($conn, $query);
             oci_bind_by_name($stmt, ':P_CATEGORY', $_SESSION['category']);
-
+            oci_bind_by_name($stmt, ':verify', $verify);
             oci_execute($stmt);
 
             // Loop through the results and display data in table rows

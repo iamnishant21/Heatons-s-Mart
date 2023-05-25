@@ -8,7 +8,7 @@ include('../connection.php');
     oci_execute($stid);
     while ($row = oci_fetch_array($stid, OCI_ASSOC)) {
         $p_id = $row['PRODUCT_ID'];
-        $p_category = $row['CATEGORY_ID'];
+        // $p_category = $row['CATEGORY_ID'];
         $p_shop = $row['SHOP_ID'];
         $p_name = $row['PRODUCT_NAME'];
         $p_price = $row['PRODUCT_PRICE'];
@@ -18,7 +18,21 @@ include('../connection.php');
         $p_quantity = $row['PRODUCT_QUANTITY'];
         $p_stock = $row['PRODUCT_STOCK'];
         $p_image = $row['PRODUCT_IMAGE'];
-    }
+      
+        $discount_percent=0;
+      if(!empty($row['DISCOUNT_ID']))
+        {
+            $querry ='SELECT DISCOUNT_PERCENT FROM "DISCOUNT"  WHERE DISCOUNT_ID= :d_id';
+            $insert = oci_parse($conn,$querry);
+            oci_bind_by_name($insert, ':d_id', $row['DISCOUNT_ID']);
+           oci_execute($insert);
+            $row = oci_fetch_array($insert, OCI_ASSOC);
+               $discount_percent= (int)$row['DISCOUNT_PERCENT'];
+        }
+      }
+      $discount_price=0;
+      
+      $discount_price= $p_price - $p_price*($discount_percent/100);
 
     ?>
 <html lang="en">
@@ -65,9 +79,34 @@ include('../connection.php');
           </li>
         </ul>
         <div class="main">
-          <a href="login.php" class="user"><i class="fas fa-user"></i></a>
+             <li class="nav-item dropdown">
+                <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                  <?php
+                    if(isset($_SESSION['user_ID'])){
+                      echo "<li><a class='dropdown-item' href='../customer/customerprofile.php'>View Profile</a></li>";
+                      echo "<li><a class='dropdown-item' href='../logout.php'>Logout</a></li>";
+                    }
+                    else{
+                      echo "<li><a class='dropdown-item' href='../login.php'>Login</a></li>";
+                    }
+                  ?>
+                </ul>
+              </li>
+              
           <a href="cart.php" ><i class="fas fa-shopping-cart"></i></a>
-          <a href="wishlist.php"> <i class="fas fa-heart"></i></a>
+
+          <?php
+          if(isset($_SESSION['user_ID'])){
+
+          echo"<a href='wishlist.php'> <i class='fas fa-heart'></i></a>";
+          } else{
+           echo" <a href='../login.php'> <i class='fas fa-heart'></i></a>";
+
+          }
+          ?>
         </div>
       </div>
     </div>
@@ -81,14 +120,16 @@ include('../connection.php');
 			</div>
 			<div class="p-detail">
 				<h1 class="product-name"><?php echo "<h3>Product Name: $p_name</h3>"; ?></h1>
-				<p class="product-price"><?php echo "<p>Price: &pound; $p_price</p>"; ?></p>
+				<p class="product-price"><?php echo " Actual price: <span style='text-decoration: line-through; class='set'>&pound; " .$p_price."</span></p>"; ?></p>
+        <p class="product-price"><?php echo "<p>Discount Price: &pound; $discount_price</p>"; ?></p>
 				<p class="product-description"><?php echo "<p>Product Description: $p_description</p>"; ?></p>
 				<p class="product-allergy"><?php echo "<p>Allergy Information: $p_allergy</p>"; ?></p>
 				<p class="product-price"><?php echo "<p>Stock: $p_stock</p>"; ?></p>
         <div class="quantity">
-					<label for="quantity" class="quantity-label">Quantity</label>
+					
+        <label for="quantity" class="quantity-label">Quantity</label>
           <input type="number" id="quantity" value="1" min="1"  max="<?php echo $p_stock; ?>">
-          <input type="hidden" id="product_id" value="<?php echo $p_id; ?>" >
+          <input type="hidden" id="product_id" value="<?php echo  $_GET['p_id']; ?>" >
 
         </div>
         <div class="buttons">
@@ -99,9 +140,10 @@ include('../connection.php');
             <button class='btn-wishlist'  onclick='addtowishlist($p_id)'><i class='fas fa-heart'></i> Add to wishlist</button>";
           }
           else{
-            echo "<button class='btn-cart'><i class='fas fa-shopping-cart'></i> Add to Cart</button>
+            echo "<button class='btn-cart' onclick='addcart()'><i class='fas fa-shopping-cart'></i> Add to Cart</button>
 
-             <button class='btn-wishlist'><i class='fas fa-heart'></i> Add to wishlist</button>";
+            <button class='btn-wishlist'  onclick='login()'><i class='fas fa-heart'></i> Add to wishlist</button>";
+
           }
         ?>
         
@@ -111,6 +153,7 @@ include('../connection.php');
       <?php
         echo "<p class='product-price mt-5 '>
         Reviews </p> ";
+      
           $count =$ratecount= 0;
             $sql = 'SELECT R.*, U.*
                     FROM "REVIEW" R
@@ -140,7 +183,12 @@ include('../connection.php');
       <div class="buttons">
       
         <?php
-          $finalrating = number_format($ratecount/$count , 1);
+          if(!empty($ratecount)){
+            $finalrating = number_format($ratecount/$count , 1);
+          }
+          else{
+            $finalrating = 0;
+          }
           echo "<p class='product-price mt-5 '>Rating (".$finalrating."/".$count.") </p>";
             
           if(isset($_SESSION['user_ID'])){
@@ -161,19 +209,19 @@ include('../connection.php');
   <script>
 
       function giverating(p_id) {
-            window.location.href = "review/review.php?p_id=" + p_id;
+            window.location.href = "review.php?p_id=" + p_id;
         }
 
         function login() {
             window.location.href = "../login.php" ;
         }
     function cartadd(){
-
       const product_id = document.getElementById('product_id').value;
       const quantity = document.getElementById('quantity').value;
       addtocart(product_id, quantity);
     } 
 
+    
     function addtocart(id, quantity){
            var xml = new XMLHttpRequest();
             xml.onreadystatechange = function () {
@@ -196,15 +244,36 @@ include('../connection.php');
             xml.send();
         }
 
+        // without login
+        function addcart(){
+          const product_id = document.getElementById('product_id').value;
+          const quantity = document.getElementById('quantity').value;
+          addcart(product_id, quantity);
+        } 
+
+        function addcart(id, quantity){
+           var xml = new XMLHttpRequest();
+            xml.onreadystatechange = function () {
+              if (this.readyState == 4 && this.status == 200) {
+                alert(this.responseText);
+              }
+            };
+            xml.open("GET", "wlac.php?action=addcart&id=" + id + "&quantity=" + quantity, true);
+            xml.send();
+        }
+
+
  </script>
 
   <div class="about">
       <div class="aboutus">
         <h3>ABOUT US</h3>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. 
-          Duis vulputate commodo lectus, ac blandit elit tincidunt id. Sed rhoncus, tortor sed eleifend tristique, tortor mauris
-          molestie elit, et lacinia ipsum quam nec dui. Quisque nec mauris sit amet elit iaculis pretium sit amet quis magna. 
-          Aenean velit odio, elementum in tempus ut, vehicula eu diam.
+        <p>At HeatonsMart, we are your ultimate destination for all your grocery needs. We bring together 
+          a delightful selection of bakery products, fresh meats from our butcher shop, a wide variety of fish, 
+          and an extensive range of grocery items. With HeatonsMart, you can conveniently shop for all your kitchen essentials
+           in one place.  Join us at HeatonsMart and experience the convenience, quality, and variety that we have to offer. Start 
+           your grocery shopping journey with us today!
+        </p>
       </div>
     </div>
     <div class="footer">
@@ -230,5 +299,11 @@ include('../connection.php');
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+
+    <
+
+
+  
 </body>
 </html>

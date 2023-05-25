@@ -13,35 +13,18 @@ if(isset($_GET['action'])){
   }
 }
 
-unset($_SESSION['discount']);
-
-  $drr = $discountamount='';
-  $discount=0;
-    if(isset($_POST['applydiscount'])){
-      if(empty($_POST['discount'])){
-        $drr = "Coupon code is required";
-      }
-      else{
-        $coupon_code = trim($_POST['discount']);
-        
-        $price = $_POST['price'];
-
-        
-
-        $sql = "SELECT * FROM DISCOUNT WHERE COUPON = :coupon";
-        $stmt = oci_parse($conn,$sql);
-        oci_bind_by_name($stmt , ":coupon" , $coupon_code);
-        oci_execute($stmt);
-          while($row = oci_fetch_array($stmt)){
-            $discount_id = $row['DISCOUNT_ID'];
-            $discount = (int)$row['DISCOUNT_PERCENT'];
-          }
+if(isset($_GET['remove']) && isset($_GET['id'])){
   
-         $discountamount = $price * ($discount/100);
-         $_SESSION['discount'] = number_format($discountamount,1);
-        
-      }
+    foreach ($_SESSION['cart'] as $key => $value) {
+        if ($value['product_id'] === $_GET['id']) { // receiving data from remove button
+            unset($_SESSION['cart'][$key]);
+            $_SESSION['cart'] = array_values($_SESSION['cart']);
+            // header('location:viewcart.php');
+            // echo "Successfully Remove from Cart";
+        }
     }
+
+}
   ?>
   
 
@@ -79,8 +62,7 @@ unset($_SESSION['discount']);
           </li>
         </ul>
         <div class="main">
-          <!-- <a href="login.php" class="user"><i class="fas fa-user"></i></a> -->
-          <li class="nav-item dropdown">
+             <li class="nav-item dropdown">
                 <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fas fa-user"></i>
                 </button>
@@ -96,8 +78,18 @@ unset($_SESSION['discount']);
                   ?>
                 </ul>
               </li>
+              
           <a href="cart.php" ><i class="fas fa-shopping-cart"></i></a>
-          <a href="wishlist.php"> <i class="fas fa-heart"></i></a>
+
+          <?php
+          if(isset($_SESSION['user_ID'])){
+
+          echo"<a href='wishlist.php'> <i class='fas fa-heart'></i></a>";
+          } else{
+           echo" <a href='../login.php'> <i class='fas fa-heart'></i></a>";
+
+          }
+          ?>
         </div>
       </div>
     </div>
@@ -120,48 +112,122 @@ unset($_SESSION['discount']);
     </thead>
     <tbody>
       <?php
-        unset($_SESSION['cart_id']);
-        $user_id = $_SESSION['user_ID'];
-        $total = 0;
-        $price = 0;
-        // Prepare the SQL query
-        $query = "
-            SELECT CART_PRODUCT.*
-            FROM CART
-            JOIN CART_PRODUCT ON CART.CART_ID = CART_PRODUCT.CART_ID
-            WHERE CART.USER_ID = :user_id";
+        // without login
 
-        $stid = oci_parse($conn, $query);
-        oci_bind_by_name($stid , ":user_id" , $user_id);
-        oci_execute($stid);
-        
-        while($data = oci_fetch_array($stid)){
+        if (isset($_SESSION['cart'])) {
+          $totalprice = 0;
+          $productprice = 0;
 
-          $cart_id = $data['CART_ID'];
-          $_SESSION['cart_id'] = $cart_id;
+          foreach ($_SESSION['cart'] as $key => $value) {
+            $quantity = $value['product_quantity'];
+            $product_id =  (int)$value['product_id'];
+            $sql = "SELECT * FROM PRODUCT WHERE PRODUCT_ID = :id";
+            $stid = oci_parse($conn, $sql);
+            oci_bind_by_name($stid, ":id",$product_id);
+            oci_execute($stid);
+  
+            while ($row = oci_fetch_array($stid, OCI_ASSOC)) {
+              $productname = $row['PRODUCT_NAME'];
+              $product_image = $row['PRODUCT_IMAGE'];
+              $product_price = $row['PRODUCT_PRICE'];
+
+              if (!empty($row['DISCOUNT_ID'])) 
+           {
+               $sql = 'SELECT DISCOUNT_PERCENT FROM "DISCOUNT" WHERE DISCOUNT_ID = :disc_id';
+               $stmt = oci_parse($conn, $sql);
+               oci_bind_by_name($stmt, ":disc_id", $row['DISCOUNT_ID']);
+               oci_execute($stmt);
+               while ($row = oci_fetch_array($stmt, OCI_ASSOC)) {
+                $discount = (int)$row['DISCOUNT_PERCENT'];
+                $discount_price = $product_price - $product_price * ($discount / 100);
+                $productprice =  $quantity * $discount_price;
+                $totalprice += $quantity * $discount_price;
+              }
+            } else {
+              $discount_price = $product_price;
+              $productprice =  $quantity * $discount_price;
+              $totalprice += $quantity * $discount_price;
+            }
+             
+
+              echo "
+                <tr>
+                  <td><a href='cart.php?remove=remove&id=$product_id'><i class='fa fa-trash'></i></a></td>";
+                echo "<td><'img src='../trader/uploads/$product_image'></td>";
+                echo  "<td>$productname</td>
+                  <td>&pound; ".$productprice."</td>
+                  <td>$quantity</td>
+                  <td> &pound;  $totalprice</td>
+                </tr> ";
+
+            }
+          }
+        }
+
+          // with login
+        if(isset($_SESSION['user_ID'])){        
+          unset($_SESSION['cart_id']);
+          $user_id = $_SESSION['user_ID'];
+          $totalprice = 0;
+          $productprice = 0;
+          // Prepare the SQL query
+          $query = "
+              SELECT CART_PRODUCT.*
+              FROM CART
+              JOIN CART_PRODUCT ON CART.CART_ID = CART_PRODUCT.CART_ID
+              WHERE CART.USER_ID = :user_id";
+
+          $stid = oci_parse($conn, $query);
+          oci_bind_by_name($stid , ":user_id" , $user_id);
+          oci_execute($stid);
           
-          $product_id = $data['PRODUCT_ID'];
-          $quantity = $data['QUANTITY'];
-          
-          $sql= "SELECT * FROM PRODUCT WHERE PRODUCT_ID = :product_id";
-          $stmt = oci_parse($conn, $sql);
-          oci_bind_by_name($stmt, ":product_id", $product_id);
-          oci_execute($stmt);
+          while($data = oci_fetch_array($stid)){
 
-          while($row = oci_fetch_array($stmt)){
-            $price =  $quantity * $row['PRODUCT_PRICE'];
-            $total += $quantity * $row['PRODUCT_PRICE'];
-            $productname = $row['PRODUCT_NAME'];
-            $product_image = $row['PRODUCT_IMAGE'];
-            echo "
-              <tr>
-                <td><a href='cart.php?action=remove&id=$product_id'><i class='fa fa-trash'></i></a></td>";
-              echo "<td><img src='image/$product_image'></td>";
-              echo  "<td>$productname</td>
-                <td>&pound; ".$row['PRODUCT_PRICE']."</td>
-                <td>$quantity</td>
-                <td> &pound; $price</td>
-              </tr> ";
+            $cart_id = $data['CART_ID'];
+            $_SESSION['cart_id'] = $cart_id;
+            
+            $product_id = $data['PRODUCT_ID'];
+            $quantity = $data['QUANTITY'];
+            
+            $sql= "SELECT * FROM PRODUCT WHERE PRODUCT_ID = :product_id";
+            $stmt = oci_parse($conn, $sql);
+            oci_bind_by_name($stmt, ":product_id", $product_id);
+            oci_execute($stmt);
+
+            while($row = oci_fetch_array($stmt)){
+              $productname = $row['PRODUCT_NAME'];
+              $product_image = $row['PRODUCT_IMAGE'];
+              $product_price = $row['PRODUCT_PRICE'];
+
+              if (!empty($row['DISCOUNT_ID'])) 
+           {
+               $sql = 'SELECT DISCOUNT_PERCENT FROM "DISCOUNT" WHERE DISCOUNT_ID = :disc_id';
+               $stmt = oci_parse($conn, $sql);
+               oci_bind_by_name($stmt, ":disc_id", $row['DISCOUNT_ID']);
+               oci_execute($stmt);
+               while ($row = oci_fetch_array($stmt, OCI_ASSOC)) {
+                $discount = (int)$row['DISCOUNT_PERCENT'];
+                $discount_price = $product_price - $product_price * ($discount / 100);
+                $productprice =  $quantity * $discount_price;
+                $totalprice += $quantity * $discount_price;
+              }
+            } else {
+              $discount_price = $product_price;
+              $productprice =  $quantity * $discount_price;
+              $totalprice += $quantity * $discount_price;
+            }
+             
+              echo "
+                <tr>
+                  <td><a href='cart.php?action=remove&id=$product_id'><i class='fa fa-trash'></i></a></td>";
+                echo "<td><img src='image/$product_image'></td>";
+                echo  "<td>$productname</td>
+                  <td>&pound; ".$productprice."</td>
+                  <td>$quantity</td>
+                  <td> &pound;  $totalprice</td>
+                </tr> ";
+
+            }
           }
         }
       ?>
@@ -170,52 +236,22 @@ unset($_SESSION['discount']);
   </table>
 </div>
 
-<div id="cart-add" class="section-p1">
-<div id="discount">
-    <h3>Apply Discount</h3>
-    <?php echo $drr; ?>
-    <div>
-      <form action="" method="post">
-        <input type="hidden" value='<?php echo $total; ?>' name='price'>
-        <input type="text" placeholder="Enter coupon code" name='discount'>
-        <button class="normal" name='applydiscount'>Apply</button>
-      </form>
-    </div>
-  </div>
-
   <div id="subtotal">
     <h3>Cart Totals</h3>
     <table>
       <tr>
         <td>Cart Subtotal</td>
-        <td> &pound; <?php echo $total;?></td>
-      </tr>
-      <tr>
-        <td>Discount Amount</td>
-        <td> &pound; 
-          <?php 
-         if(isset($_SESSION['discount'])){
-            echo $_SESSION['discount'];
-         }
-         else{
-          echo $discount;
-         }
-         ?></td>
+        <td> &pound; <?php echo $totalprice;?></td>
       </tr>
       <tr>
         <td><strong>Total</strong></td>
         <td><strong> &pound; 
           <?php 
                         unset($_SESSION['total']);
-                        if(isset($_SESSION['discount'])){
-                          $total_amount = $total -$_SESSION['discount'];
-                          $_SESSION['total'] = $total_amount; 
-                         echo $total_amount;
-                        }
-                        else {
-                          $_SESSION['total'] = $total; 
-                         echo $total;
-                        }
+                        
+                        $_SESSION['total'] = $totalprice; 
+                        echo $totalprice;
+                        
                         ?>
             </strong>
           </td>
@@ -248,10 +284,13 @@ unset($_SESSION['discount']);
   <div class="about">
     <div class="aboutus">
         <h3>ABOUT US</h3>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. 
-          Duis vulputate commodo lectus, ac blandit elit tincidunt id. Sed rhoncus, tortor sed eleifend tristique, tortor mauris
-          molestie elit, et lacinia ipsum quam nec dui. Quisque nec mauris sit amet elit iaculis pretium sit amet quis magna. 
-          Aenean velit odio, elementum in tempus ut, vehicula eu diam.
+        <p>At HeatonsMart, we are your ultimate destination for all your grocery needs. We bring together 
+          a delightful selection of bakery products, fresh meats from our butcher shop, a wide variety of fish, 
+          and an extensive range of grocery items. With HeatonsMart, you can conveniently shop for all your kitchen essentials
+           in one place.  Join us at HeatonsMart and experience the convenience, quality, and variety that we have to offer. Start 
+           your grocery shopping journey with us today!
+        </p>
+        <h3>Promo Code = HM2023, HM1234, HM0246, HM0987</h3>
     </div>
 </div>
 <div class="footer">
@@ -270,8 +309,14 @@ unset($_SESSION['discount']);
         </div>
     </div>
 </div>  
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" 
+     crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
 </body>
 </html>

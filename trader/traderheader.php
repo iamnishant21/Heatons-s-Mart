@@ -56,8 +56,7 @@
                   ORDER
                 </button>
                 <ul class="dropdown-menu dropdown-menu-dark">
-                  <li><a class="dropdown-item" href="#">ORDER List</a></li>
-                  <li><a class="dropdown-item" href="#">ORDER History</a></li>
+                  <li><a class="dropdown-item" href="orderhistory.php">ORDER History</a></li>
 
                 </ul>
               </li>

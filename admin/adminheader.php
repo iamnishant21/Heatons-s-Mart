@@ -50,11 +50,10 @@
               </div>
               <li class="nav-item dropdown">
                 <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                  ORDER
+                  PRODUCT
                 </button>
                 <ul class="dropdown-menu dropdown-menu-dark">
-                  <li><a class="dropdown-item" href="#">ORDER List</a></li>
-                  <li><a class="dropdown-item" href="#">ORDER History</a></li>
+                  <li><a class="dropdown-item" href="product_list.php">PRODUCT List</a></li>
 
                 </ul>
               </li>
@@ -67,7 +66,7 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-dark">
                   <li><a class="dropdown-item" href="adminprofile.php">View Profile</a></li>
-                  <!-- <li><a class="dropdown-item" href="../logout.php">Logout</a></li> -->
+                  <li><a class="dropdown-item" href="../logout.php">Logout</a></li>
 
                 </ul>
               </li>

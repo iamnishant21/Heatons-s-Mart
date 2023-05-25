@@ -2,8 +2,8 @@
   session_start();
 
   if(isset($_POST['searchname'])){
-    $p_name = strtolower(trim($_POST['productname']));
-    header("location:product.php?productname=".$p_name."&search=$p_name");
+    $p_name = ucfirst(trim($_POST['productname']));
+    header("location:product.php?productname=".$p_name."&search=search");
   }
 ?>
 <!DOCTYPE html>
@@ -76,7 +76,16 @@
               </li>
               
           <a href="cart.php" ><i class="fas fa-shopping-cart"></i></a>
-          <a href="wishlist.php"> <i class="fas fa-heart"></i></a>
+
+          <?php
+          if(isset($_SESSION['user_ID'])){
+
+          echo"<a href='wishlist.php'> <i class='fas fa-heart'></i></a>";
+          } else{
+           echo" <a href='../login.php'> <i class='fas fa-heart'></i></a>";
+
+          }
+          ?>
         </div>
       </div>
     </div>
@@ -103,93 +112,130 @@
       <div class="item"><img src="image/BB8.jpg"></div>
     </div>
     <div class="products-tag">
-      <h2>HOT DEALS</h2>
-    </div> 
-    <div class="product-row">
-    <?php
-    include("../connection.php");
-    $sql = 'SELECT * FROM "PRODUCT" ORDER BY dbms_random.value';
-    $stmt = oci_parse($conn, $sql);
-    oci_execute($stmt);
+  <h2>HOT DEALS</h2>
+</div> 
+<div class="product-row">
+<?php
+include("../connection.php");
+$verify = 'verified';
 
-    while ($row = oci_fetch_array($stmt, OCI_ASSOC)) {
-      $product_id = $row['PRODUCT_ID'];
-      $product_name = $row['PRODUCT_NAME'];
-      $product_category = $row['PRODUCT_CATEGORY'];
-      $product_price = $row['PRODUCT_PRICE'];
-      $product_quantity = $row['PRODUCT_QUANTITY'];
-      $product_image = $row['PRODUCT_IMAGE'];
+$sql = 'SELECT * FROM PRODUCT WHERE PRODUCT_STATUS = :verify';
+$stmt = oci_parse($conn, $sql);
+oci_bind_by_name($stmt, ':verify', $verify);
 
-      echo"<div class='product'>
-           <img src='../trader/uploads/$product_image' onclick='viewproduct($product_id)'>
-           <div class='product-info'>
-           <h3>$product_name</h3>
-           <p>Price: &pound; $product_price</p>
-           <div class='product-icons'>";
-            
-          if(isset($_SESSION['user_ID'])){
-            echo "<div class='add-to-cart' onclick='addtocart($product_id,1)'><i class='fa fa-shopping-cart'></i></div>";
-            echo "<div class='add-to-wishlist'  onclick='addtowishlist($product_id)' ><i class='fa fa-heart'></i></div>";
-          }
-          else{
-            echo "<div class='add-to-cart'><i class='fa fa-shopping-cart'></i></div>";
-            echo "<div class='add-to-wishlist'><i class='fa fa-heart'></i></div>";
-          }
+oci_execute($stmt);
 
-          echo "</div>
-        </div>
-      </div>";
-    }
-    ?>  
-    </div>
+while ($row = oci_fetch_array($stmt, OCI_ASSOC)) {
+  $product_id = $row['PRODUCT_ID'];
+  $product_name = $row['PRODUCT_NAME'];
+  $product_category = $row['PRODUCT_CATEGORY'];
+  $product_price = $row['PRODUCT_PRICE'];
+  $product_quantity = $row['PRODUCT_QUANTITY'];
+  $product_image = $row['PRODUCT_IMAGE'];
+
+  echo "<div class='product'>";
+  echo "<img src='../trader/uploads/$product_image' onclick='viewproduct($product_id)'>";
+  echo "<div class='product-info'>";
+  echo "<h3>" . ucfirst($product_name) . "</h3>";
+
+  if (!empty($row['DISCOUNT_ID'])) {
+    $discount_sql = 'SELECT DISCOUNT_PERCENT FROM DISCOUNT WHERE DISCOUNT_ID = :disc_id';
+    $discount_stmt = oci_parse($conn, $discount_sql);
+    oci_bind_by_name($discount_stmt, ":disc_id", $row['DISCOUNT_ID']);
+    oci_execute($discount_stmt);
+    $discount_row = oci_fetch_array($discount_stmt, OCI_ASSOC); 
+    $discount = (int)$discount_row['DISCOUNT_PERCENT'];
+    $total_price = $product_price - $product_price * ($discount / 100);
+    echo "<p style='text-decoration: line-through;' class='set'>&pound; " . $product_price . "</p>";
+    echo "<p class='dis'>&pound; " . $total_price . "</p>";
+  } else {
+    echo "<p class='amount'>&pound; " . $product_price . "</p>";
+  }
+
+  echo "<div class='product-icons'>";
   
-    <div class="products-tag">
-      <h2>RECOMMENDED PRODUCTS</h2>
-    </div> 
-    <div class="product-row">
-      
-    <?php
-    $sql = 'SELECT * FROM "PRODUCT" ORDER BY dbms_random.value';
-    $stmt = oci_parse($conn, $sql);
-    oci_execute($stmt);
+  if(isset($_SESSION['user_ID'])){
+    echo "<div class='add-to-cart' onclick='addtocart($product_id, 1)'><i class='fa fa-shopping-cart'></i></div>";
+    echo "<div class='add-to-wishlist' onclick='addtowishlist($product_id)'><i class='fa fa-heart'></i></div>";
+  } else {
+    echo "<div class='add-to-cart' onclick='addcart($product_id, 1)'><i class='fa fa-shopping-cart'></i></div>";
+    echo "<div class='add-to-wishlist' onclick='login()'><i class='fa fa-heart'></i></div>";
+  }
 
-    while ($row = oci_fetch_array($stmt, OCI_ASSOC)) {
-      $product_id = $row['PRODUCT_ID'];
-      $product_name = $row['PRODUCT_NAME'];
-      $product_category = $row['PRODUCT_CATEGORY'];
-      $product_price = $row['PRODUCT_PRICE'];
-      $product_quantity = $row['PRODUCT_QUANTITY'];
-      $product_image = $row['PRODUCT_IMAGE'];
+  echo "</div>";
+  echo "</div>";
+  echo "</div>";
+}
+?>  
+</div>
 
-      echo"<div class='product'>
-           <img src='../trader/uploads/$product_image' onclick='viewproduct($product_id)'>
-           <div class='product-info'>
-           <h3>$product_name</h3>
-           <p>Price: &pound; $product_price</p>
-           <div class='product-icons'>";
+<div class="products-tag">
+  <h2>RECOMMENDED PRODUCTS</h2>
+</div> 
+<div class="product-row">
+<?php
+include("../connection.php");
+$verify = 'verified';
 
-          if(isset($_SESSION['user_ID'])){
-            echo "<div class='add-to-cart' onclick='addtocart($product_id,1)'><i class='fa fa-shopping-cart'></i></div>";
-            echo "<div class='add-to-wishlist' onclick='addtowishlist($product_id)'><i class='fa fa-heart'></i></div>";
-          }
-          else{
-            echo "<div class='add-to-cart'><i class='fa fa-shopping-cart'></i></div>";
-            echo "<div class='add-to-wishlist'><i class='fa fa-heart'></i></div>";
-          }
+$sql = 'SELECT * FROM PRODUCT WHERE PRODUCT_STATUS = :verify';
+$stmt = oci_parse($conn, $sql);
+oci_bind_by_name($stmt, ':verify', $verify);
 
-          echo "</div>
-        </div>
-      </div>";
-    }
-    ?> 
-    </div>
+oci_execute($stmt);
+
+while ($row = oci_fetch_array($stmt, OCI_ASSOC)) {
+  $product_id = $row['PRODUCT_ID'];
+  $product_name = $row['PRODUCT_NAME'];
+  $product_category = $row['PRODUCT_CATEGORY'];
+  $product_price = $row['PRODUCT_PRICE'];
+  $product_quantity = $row['PRODUCT_QUANTITY'];
+  $product_image = $row['PRODUCT_IMAGE'];
+
+  echo "<div class='product'>";
+  echo "<img src='../trader/uploads/$product_image' onclick='viewproduct($product_id)'>";
+  echo "<div class='product-info'>";
+  echo "<h3>" . ucfirst($product_name) . "</h3>";
+
+  if (!empty($row['DISCOUNT_ID'])) {
+    $discount_sql = 'SELECT DISCOUNT_PERCENT FROM DISCOUNT WHERE DISCOUNT_ID = :disc_id';
+    $discount_stmt = oci_parse($conn, $discount_sql);
+    oci_bind_by_name($discount_stmt, ":disc_id", $row['DISCOUNT_ID']);
+    oci_execute($discount_stmt);
+    $discount_row = oci_fetch_array($discount_stmt, OCI_ASSOC); 
+    $discount = (int)$discount_row['DISCOUNT_PERCENT'];
+    $total_price = $product_price - $product_price * ($discount / 100);
+    echo "<p style='text-decoration: line-through;' class='set'>&pound; " . $product_price . "</p>";
+    echo "<p class='dis'>&pound; " . $total_price . "</p>";
+  } else {
+    echo "<p class='amount'>&pound; " . $product_price . "</p>";
+  }
+
+  echo "<div class='product-icons'>";
+  
+  if(isset($_SESSION['user_ID'])){
+    echo "<div class='add-to-cart' onclick='addtocart($product_id, 1)'><i class='fa fa-shopping-cart'></i></div>";
+    echo "<div class='add-to-wishlist' onclick='addtowishlist($product_id)'><i class='fa fa-heart'></i></div>";
+  } else {
+    echo "<div class='add-to-cart' onclick='addcart($product_id, 1)'><i class='fa fa-shopping-cart'></i></div>";
+    echo "<div class='add-to-wishlist' onclick='login()'><i class='fa fa-heart'></i></div>";
+  }
+
+  echo "</div>";
+  echo "</div>";
+  echo "</div>";
+}
+?>  
+</div>
+
     <div class="about">
       <div class="aboutus">
         <h3>ABOUT US</h3>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. 
-          Duis vulputate commodo lectus, ac blandit elit tincidunt id. Sed rhoncus, tortor sed eleifend tristique, tortor mauris
-          molestie elit, et lacinia ipsum quam nec dui. Quisque nec mauris sit amet elit iaculis pretium sit amet quis magna. 
-          Aenean velit odio, elementum in tempus ut, vehicula eu diam.
+        <p>At HeatonsMart, we are your ultimate destination for all your grocery needs. We bring together 
+          a delightful selection of bakery products, fresh meats from our butcher shop, a wide variety of fish, 
+          and an extensive range of grocery items. With HeatonsMart, you can conveniently shop for all your kitchen essentials
+           in one place.  Join us at HeatonsMart and experience the convenience, quality, and variety that we have to offer. Start 
+           your grocery shopping journey with us today!
+        </p>
       </div>
     </div>
     <div class="footer">
@@ -250,6 +296,10 @@
         function viewproduct(p_id) {
             window.location.href = "pdetail.php?p_id=" + p_id;
         }
+
+        function login() {
+            window.location.href = "../login.php";
+        }
         
         function addtocart(id, quantity){
            var xml = new XMLHttpRequest();
@@ -259,6 +309,17 @@
               }
             };
             xml.open("GET", "addCartWishlist.php?action=addcart&id=" + id + "&quantity=" + quantity, true);
+            xml.send();
+        }
+
+        function addcart(id, quantity){
+           var xml = new XMLHttpRequest();
+            xml.onreadystatechange = function () {
+              if (this.readyState == 4 && this.status == 200) {
+                alert(this.responseText);
+              }
+            };
+            xml.open("GET", "wlac.php?action=addcart&id=" + id + "&quantity=" + quantity, true);
             xml.send();
         }
 

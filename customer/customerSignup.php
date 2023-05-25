@@ -159,6 +159,12 @@
                     oci_bind_by_name($stid, ':HVERIFY', $verify);
 
                     $_SESSION['email'] = $email;
+                        $semail = $email;
+                        $head = "Notification from Heton's Mart";
+                        $body = "Dear, $email\n Hi, You are successfully registered as customer in Heatons Mart.";
+
+                        include('../sendmail.php');
+
 
                     if (oci_execute($stid)) {
                         header("location:createCartWishlist.php");

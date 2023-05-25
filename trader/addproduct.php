@@ -7,6 +7,7 @@ if (isset($_POST['subproduct'])) {
     // Get the form data
     $pname = $_POST['pname'];
     $pcategory_id = $_POST['categoryid'];
+    $discount_id = $_POST['discountid'];
     $description = $_POST['description'];
     $allergy = $_POST['allergy'];
     $pprice = $_POST['pprice'];
@@ -22,15 +23,18 @@ if (isset($_POST['subproduct'])) {
     if($utype=="image/jpeg" || $utype=="image/jpg" || $utype=="image/png" || $utype=="image/gif" ||$utype=="image/jfif")
         {
     // Prepare the SQL statement
-    $sql = 'INSERT INTO "PRODUCT" (PRODUCT_NAME,PRODUCT_CATEGORY,PRODUCT_DESCRIPTION,ALLERGY_INFORMATION,PRODUCT_PRICE,PRODUCT_QUANTITY,PRODUCT_STOCK,PRODUCT_IMAGE,CATEGORY_ID,SHOP_ID) 
-            VALUES (:pname, :pcategory, :description, :allergy, :pprice, :pquantity, :pstock, :image,:category_id,:pshop)';
+    $verify='waiting';
+    $sql = 'INSERT INTO "PRODUCT" (PRODUCT_NAME,PRODUCT_CATEGORY,DISCOUNT_ID,PRODUCT_DESCRIPTION,ALLERGY_INFORMATION,PRODUCT_PRICE,PRODUCT_QUANTITY,PRODUCT_STOCK,PRODUCT_IMAGE,CATEGORY_ID,SHOP_ID,PRODUCT_STATUS) 
+            VALUES (:pname, :pcategory, :pdiscountid, :description, :allergy, :pprice, :pquantity, :pstock, :image,:category_id,:pshop,:P_verify)';
 
     // Parse the SQL statement
     $stmt = oci_parse($conn, $sql);
 
     // Bind the parameters
-    oci_bind_by_name($stmt, ':pname', strtolower($pname));
+    oci_bind_by_name($stmt, ':pname',$pname);
     oci_bind_by_name($stmt, ':pcategory', $_SESSION['category']);
+    oci_bind_by_name($stmt, ':pdiscountid', $discount_id);
+
     oci_bind_by_name($stmt, ':description', $description);
     oci_bind_by_name($stmt, ':allergy', $allergy);
     oci_bind_by_name($stmt, ':pprice', $pprice);
@@ -39,6 +43,8 @@ if (isset($_POST['subproduct'])) {
     oci_bind_by_name($stmt, ':image', $image);
     oci_bind_by_name($stmt, ':category_id', $pcategory_id);
     oci_bind_by_name($stmt, ':pshop', $shop_id);
+    oci_bind_by_name($stmt,':P_verify',$verify);
+
 
     // Execute the statement
     $res = oci_execute($stmt);
@@ -91,7 +97,6 @@ if (isset($_POST['subproduct'])) {
                         <label>Product Name :</label>
                         <input type='text' name='pname'>
                         <label>Category:</label>
-                        <!-- <input type='text' name='pcategory'> -->
                         <select  name="categoryid">
 
                             <?php
@@ -107,6 +112,22 @@ if (isset($_POST['subproduct'])) {
                             ?>
 
                         </select>
+
+                        <label>DISCOUNT : </label>
+                        <select class="inputbox" name="discountid">
+                        <option value="">Select discount type</option>
+                        <?php
+                            $sql = "SELECT * FROM DISCOUNT";
+                            $stid = oci_parse($conn, $sql);
+                            oci_execute($stid);
+
+                            while ($row = oci_fetch_array($stid, OCI_ASSOC)) {
+                            echo "<option value=".$row['DISCOUNT_ID'].">" . $row['DISCOUNT_DESC'] .'('.
+                             $row['DISCOUNT_PERCENT'] . "%)</option>";
+                            }
+                       ?>
+                        </select>
+
                     </div>
                     
                     <div class="desc">

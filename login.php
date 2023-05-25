@@ -32,7 +32,6 @@
             $status = 'verified';
             $sql = 'SELECT * FROM "USER" WHERE EMAIL_ADDRESS = :email AND PASSWORD = :userpassword AND ROLE = :urole AND STATUS = :status';
 
-            // $sql = 'SELECT * FROM "USER" WHERE EMAIL_ADDRESS = :email AND PASSWORD = :userpassword AND ROLE = :urole';
             $stmt = oci_parse($conn,$sql );
 
             oci_bind_by_name($stmt, ':email', $email);
@@ -47,12 +46,11 @@
                 if($role == 'customer'){
                     $_SESSION['token'] = $token;
                     $_SESSION['user_ID']=$result['USER_ID'];
+                    include('addcart.php');
                     header("location:Home/homepage.php");
-
                 }
                 
                 if($role=='trader'){
-                    
                     $_SESSION['trader_ID']=$result['USER_ID'];
                     $_SESSION['category']=$result['CATEGORY'];
                     $_SESSION['username'] = $result['FIRSTNAME'];

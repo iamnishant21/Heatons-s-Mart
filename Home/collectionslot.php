@@ -49,13 +49,10 @@
             <a class="nav-link" href="homepage.php">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="contact_us.html">Contact Us</a>
+            <a class="nav-link" href="contact_us.php">Contact Us</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="product.php">Products</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="deals.php">Deals</a>
           </li>
         </ul>
         <div class="main">
@@ -80,7 +77,7 @@
           <!-- <form autocomplete="off"> -->
             <div class="card-header bg-dark">
               <div class="mx-0 mb-0 row justify-content-sm-center justify-content-start px-1">
-                <input type="text" id="dp1" class="datepicker" placeholder="Pick Date" name="date" readonly><span class="fa fa-calendar"></span>
+                <!-- <input type="text" id="dp1" class="datepicker" placeholder="Pick Date" name="date" readonly><span class="fa fa-calendar"></span> -->
               </div>
             </div>
               <div class="row text-center mx-0">
@@ -116,10 +113,11 @@
   <div class="about">
     <div class="aboutus">
         <h3>ABOUT US</h3>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. 
-          Duis vulputate commodo lectus, ac blandit elit tincidunt id. Sed rhoncus, tortor sed eleifend tristique, tortor mauris
-          molestie elit, et lacinia ipsum quam nec dui. Quisque nec mauris sit amet elit iaculis pretium sit amet quis magna. 
-          Aenean velit odio, elementum in tempus ut, vehicula eu diam.
+        <p>At HeatonsMart, we are your ultimate destination for all your grocery needs. We bring together 
+          a delightful selection of bakery products, fresh meats from our butcher shop, a wide variety of fish, 
+          and an extensive range of grocery items. With HeatonsMart, you can conveniently shop for all your kitchen essentials
+           in one place.  Join us at HeatonsMart and experience the convenience, quality, and variety that we have to offer. Start 
+           your grocery shopping journey with us today!
     </div>
 </div>
 <div class="footer">
@@ -154,15 +152,7 @@
       startDate: '0d'
     });
    
-    // $('.cell').click(function(){
-    //   $('.cell').removeClass('select');
-    //   $(this).addClass('select');
-    //   const  element = document.querySelector('.cell');
-    //   const slot_id = element.getAttribute('data-id');
-    //   alert('Slot ID:' +slot_id);
-    // });
   
-
     $('.cell').click(function() {
       $('.cell').removeClass('select');
       $(this).addClass('select');

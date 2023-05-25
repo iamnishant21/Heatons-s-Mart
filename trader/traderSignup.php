@@ -145,9 +145,9 @@ if (isset($_POST['subtrader'])) {
                 oci_bind_by_name($stid, ':HPASSWORD', $password);
                 oci_bind_by_name($stid, ':HVERIFY', $trader_verify);
 
-                $_SESSION['category']= $user_category;
+                $_SESSION['category']= $$user_category;
                 $semail = $email;
-                $head = "Notification from Heton's Mart";
+                $head = "Notofication from Heton's Mart";
                 $body = "Dear, $user_fname $user_lname\n Hi, You successfully registered but not verified as a traders.\n Your information is on going process.\n your will be notified after you successfully verified as trader.";
 
                 include('../sendmail.php');
@@ -190,16 +190,10 @@ if (isset($_POST['subtrader'])) {
         <div class="one">
             <img src="../customer/cart7.jpg" alt="">
             <div class="onei">
-                <h3 onclick="home()">Welcome to Heaton's Mart</h3>
+                <h3>Welcome to Heaton's Mart</h3>
                 <p>Your Neighbourhood Grocers</p>
             </div>
         </div>
-        <script>
-            function home(){
-                document.location.href = "../Home/homepage.php";
-            }
-            
-        </script>
         <div class="two">
             <div class="twoi">
                 <a href="../customer/customerSignup.php" id="customer">Customer</a>
