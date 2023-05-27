@@ -71,7 +71,7 @@ if(isset($_POST['cButton'])){
 
         if ($res){
         if(move_uploaded_file($utmpname,$ulocation)){
-          header('location:traderprofile.php');
+          header('location:adminprofile.php');
         }
         else{
           echo "Unable to insert file";
@@ -154,7 +154,7 @@ if(isset($_POST['cButton'])){
           $sql = 'SELECT * FROM "USER" WHERE USER_ID = :id ';
           $stid= oci_parse($conn,$sql);
 
-          oci_bind_by_name($stid, ':id' , $_SESSION['trader_ID'] );
+          oci_bind_by_name($stid, ':id' , $_SESSION['admin_ID'] );
           
           oci_execute($stid);
 

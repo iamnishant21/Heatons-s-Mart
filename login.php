@@ -59,8 +59,10 @@
                 
                 if($role=='admin'){
                     $_SESSION['admin_ID']=$result['USER_ID'];
+                    header("location:admin/admindashboard.php");
 
-                    echo "Successfuly connected to admin";
+
+                    // echo "Successfuly connected to admin";
                 }
             }
             else{

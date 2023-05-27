@@ -2,6 +2,7 @@
 session_start();
 include("connection.php");
 $error_name='';
+
 if (isset($_POST['subReset'])) {
     if (empty($_POST['email'])) {
         $error_name = 'Email is required';
@@ -9,23 +10,25 @@ if (isset($_POST['subReset'])) {
     else{
     $email = $_POST['email'];
     
+    $data_email ='';
     $sql = 'SELECT * FROM "USER" WHERE EMAIL_ADDRESS = :t_email';
 
     $stid1 = oci_parse($conn, $sql);
     oci_bind_by_name($stid1,':t_email' ,$email);
     oci_execute($stid1);
 
-    $data_email ='';
-
         while($row = oci_fetch_array($stid1,OCI_ASSOC)){
             $data_email = $row['EMAIL_ADDRESS'];
         }
 
         if($data_email === $email){
-           
+           unset( $_SESSION['email']);
+            unset($_SESSION['otp']);
             $otp_number = rand(100000,999999);
-            $sub ="Please Verify Your Email address";
-            $message="Dear User, Your Verification Code is: $otp_number";  
+            
+            $semail= $data_email;
+            $head ="Please Verify Your Email address";
+            $body="Dear User, Your Verification Code is: $otp_number";  
         
             include('sendmail.php');
             $_SESSION['otp'] =$otp_number;
